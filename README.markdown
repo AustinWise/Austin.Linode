@@ -2,7 +2,7 @@ Austin.Linode, a .NET library for the Linode API
 -----------------------------------------------------------------
 
 An easy use way to use the Linode API from C#.  Currently only implements enough
-api actions to reboot a node.  It's pretty easy to add new ones though.
+api actions to reboot or resize a node.  It's pretty easy to add new ones though.
 
 Dependencies
 ------------
