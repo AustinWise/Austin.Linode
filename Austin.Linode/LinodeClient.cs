@@ -7,13 +7,13 @@ using Newtonsoft.Json;
 
 namespace Austin.Linode
 {
-    public class Linode
+    public class LinodeClient
     {
         private string apiKey;
         private WebClient wc = new WebClient();
         private static readonly Dictionary<string, string> EmptyDict = new Dictionary<string, string>(0);
 
-        public Linode(string apiKey)
+        public LinodeClient(string apiKey)
         {
             this.apiKey = apiKey;
             var dic = new Dictionary<int, int>();
@@ -60,10 +60,25 @@ namespace Austin.Linode
             return GetResponse<Job[]>("linode.job.list", new Dictionary<string, string> { { "LinodeID", node.ToString() }, { "JobID", jobId.ToString() } });
         }
 
+        public Plan[] Avail_LinodePlans()
+        {
+            return GetResponse<Plan[]>("avail.linodeplans", EmptyDict);
+        }
+
+        public DataCenter[] Avail_DataCenters()
+        {
+            return GetResponse<DataCenter[]>("avail.datacenters", EmptyDict);
+        }
+
         /// <returns>The job id</returns>
         public int Linode_Reboot(int node)
         {
             return GetResponse<JobIdResponse>("linode.reboot", new Dictionary<string, string> { { "LinodeID", node.ToString() } }).JobID;
+        }
+
+        public void Linode_Resize(int node, int planId)
+        {
+            GetResponse<object>("linode.resize", new Dictionary<string, string> { { "LinodeID", node.ToString() }, { "PlanID", planId.ToString() } });
         }
     }
 }
