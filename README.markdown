@@ -1,13 +1,13 @@
 Austin.Linode, a .NET library for the Linode API
 -----------------------------------------------------------------
 
-An easy use way to use the Linode API from C#.  Currently only implements enough
-api actions to reboot or resize a node.  It's pretty easy to add new ones though.
+An easy use way to use the Linode API from C#.  While every API call is currently
+implemented, only enough response to reboot or resize instance are implemented.
 
 Dependencies
 ------------
 
- - .NET Framework 4.0 (Actully should be fine to use on the 2.0 runtime, you will just need to recompile and get the 2.0 version of Json.NET)
+ - .NET Framework 4.0 (It should compile just fine on .NET 3.5, a trivial amount of LINQ is used that would have to be removed to compile for .NET 2.0)
  - [Json.NET](http://json.codeplex.com/)
 
 
@@ -20,5 +20,5 @@ Austin.Linode is licensed under a three-clause BSD license.
 Areas for improvement
 ---------------------
 
- - Currently limited number of API actions implemented.
+ - Parse more API responses.
  - Batch requests.
