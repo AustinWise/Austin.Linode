@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Austin.Linode
 {
-    class JobIdResponse
+    public class JobIdResponse
     {
         public int JobID { get; set; }
     }

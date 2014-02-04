@@ -1,0 +1,77 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Globalization" #>
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+
+namespace Austin.Linode
+{
+partial class LinodeClient
+{
+<#
+int[] ver = new int[4];
+string[] splits = SPEC.Version.Split('.');
+for (int i = 0; i < splits.Length; i++)
+{
+	ver[i] = int.Parse(splits[i], CultureInfo.InvariantCulture);
+}
+#>
+	public readonly Version GeneratedApiVersion = new Version(<#= ver[0] #>, <#= ver[1] #>, <#= ver[2] #>, <#= ver[3] #>);
+<#
+    foreach (var meth in SPEC.Methods.OrderBy(kvp => kvp.Key))
+    {
+		if (meth.Key == "api.spec")
+			continue; //this is created manually, otherwise there is a chicken/egg problem
+
+		Type returnType = typeof(void);
+		if (mReturnType.ContainsKey(meth.Key))
+			returnType = mReturnType[meth.Key];
+#>
+	public <#= PrettyPrintType(returnType) #> <#= MethodName(meth.Key) #>(
+<#
+		int paramCount = meth.Value.Parameters.Count();
+		PushIndent(new string(' ', 12));
+		foreach (var param in SortParams(meth.Value.Parameters))
+		{
+			Write(ParamDec(param.Key, param.Value));
+			if (--paramCount != 0)
+			{
+				WriteLine(", ");
+			}
+		}
+		PopIndent();
+#>
+	)
+	{
+<#
+		if (meth.Value.HasParameters)
+			WriteLine("var myParams = new Dictionary<string, string>();");
+		foreach (var param in SortParams(meth.Value.Parameters))
+		{
+			if (!param.Value.Required)
+			{
+#>
+		if (<#= param.Key #> != null)
+<#
+			}
+#>
+		myParams.Add("<#= param.Key #>", <#= param.Key #><#= ToStringPostfix(param.Value) #>);
+<#
+		}
+		if (returnType != typeof(void))
+		{
+			Write("return ");
+		}
+#>
+		GetResponse< <#= returnType == typeof(void) ? "object" : PrettyPrintType(returnType) #> >("<#= meth.Key #>", <#= meth.Value.HasParameters ? "myParams" : "null" #>);
+	}
+<#
+    }
+#>
+}
+}

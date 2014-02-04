@@ -10,10 +10,10 @@ namespace TestStuff
     {
         static void Main(string[] args)
         {
-            var li = new Linode("~~~");
+            var li = new LinodeClient("~~~");
 
             var id = li.Linode_List()[0].Id;
-            int jobId = li.Linode_Reboot(id);
+            int jobId = li.Linode_Reboot(id).JobID;
             while (true)
             {
                 var j = li.Linode_Job_List(id, jobId)[0];

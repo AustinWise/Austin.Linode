@@ -1,9 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Austin.Linode", "Austin.Linode\Austin.Linode.csproj", "{D37B4060-F839-4AA8-B5F8-7125AA571C5A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStuff", "TestStuff\TestStuff.csproj", "{DB7138C0-C4A7-4680-A83E-6B9CC25E8736}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenApi", "GenApi\GenApi.csproj", "{850E6432-EBC6-4F9D-BFD5-16AB2547B649}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,16 @@ Global
 		{DB7138C0-C4A7-4680-A83E-6B9CC25E8736}.Release|Mixed Platforms.Build.0 = Release|x86
 		{DB7138C0-C4A7-4680-A83E-6B9CC25E8736}.Release|x86.ActiveCfg = Release|x86
 		{DB7138C0-C4A7-4680-A83E-6B9CC25E8736}.Release|x86.Build.0 = Release|x86
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Release|Any CPU.Build.0 = Release|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{850E6432-EBC6-4F9D-BFD5-16AB2547B649}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

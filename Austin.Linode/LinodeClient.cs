@@ -7,28 +7,32 @@ using Newtonsoft.Json;
 
 namespace Austin.Linode
 {
-    public class LinodeClient
+    public partial class LinodeClient
     {
-        private string apiKey;
-        private WebClient wc = new WebClient();
-        private static readonly Dictionary<string, string> EmptyDict = new Dictionary<string, string>(0);
+        private string mApiKey;
+        private WebClient mWc = new WebClient();
 
         public LinodeClient(string apiKey)
         {
-            this.apiKey = apiKey;
-            var dic = new Dictionary<int, int>();
+            this.mApiKey = apiKey;
         }
 
-        public string GetJson(string apiAction, Dictionary<string, string> args)
+        string GetJson(string apiAction, Dictionary<string, string> args, bool needsAuth = true)
         {
+            if (args == null)
+                args = new Dictionary<string, string>();
+            args.Add("api_action", apiAction);
+            if (needsAuth)
+                args.Add("api_key", mApiKey);
+
             var param = string.Join("&", args.Select(kvp => kvp.Key + "=" + kvp.Value));
-            string url = string.Format("https://api.linode.com/?api_key={0}&api_action={1}&{2}", apiKey, apiAction, param);
-            return wc.DownloadString(url);
+            string url = "https://api.linode.com/?" + param;
+            return mWc.DownloadString(url);
         }
 
-        public T GetResponse<T>(string apiAction, Dictionary<string, string> args)
+        T GetResponse<T>(string apiAction, Dictionary<string, string> args, bool needsAuth = true)
         {
-            string json = GetJson(apiAction, args);
+            string json = GetJson(apiAction, args, needsAuth);
             try
             {
                 var ret = JsonConvert.DeserializeObject<Response<T>>(json);
@@ -45,40 +49,9 @@ namespace Austin.Linode
             }
         }
 
-        public Node[] Linode_List()
+        public ApiSpec Api_Spec()
         {
-            return GetResponse<Node[]>("linode.list", EmptyDict);
-        }
-
-        public Job[] Linode_Job_List(int node)
-        {
-            return GetResponse<Job[]>("linode.job.list", new Dictionary<string, string> { { "LinodeID", node.ToString() } });
-        }
-
-        public Job[] Linode_Job_List(int node, int jobId)
-        {
-            return GetResponse<Job[]>("linode.job.list", new Dictionary<string, string> { { "LinodeID", node.ToString() }, { "JobID", jobId.ToString() } });
-        }
-
-        public Plan[] Avail_LinodePlans()
-        {
-            return GetResponse<Plan[]>("avail.linodeplans", EmptyDict);
-        }
-
-        public DataCenter[] Avail_DataCenters()
-        {
-            return GetResponse<DataCenter[]>("avail.datacenters", EmptyDict);
-        }
-
-        /// <returns>The job id</returns>
-        public int Linode_Reboot(int node)
-        {
-            return GetResponse<JobIdResponse>("linode.reboot", new Dictionary<string, string> { { "LinodeID", node.ToString() } }).JobID;
-        }
-
-        public void Linode_Resize(int node, int planId)
-        {
-            GetResponse<object>("linode.resize", new Dictionary<string, string> { { "LinodeID", node.ToString() }, { "PlanID", planId.ToString() } });
+            return GetResponse<ApiSpec>("api.spec", null, false);
         }
     }
 }
