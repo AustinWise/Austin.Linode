@@ -8,13 +8,13 @@ Dependencies
 ------------
 
  - .NET Framework 4.0 (Actully should be fine to use on the 2.0 runtime, you will just need to recompile and get the 2.0 version of Json.NET)
- - [Json.NET](http://json.codeplex.com/) (included)
+ - [Json.NET](http://json.codeplex.com/)
 
 
 License
 -------
 
-Austin.Linode is licensed under the BSD license.
+Austin.Linode is licensed under a three-clause BSD license.
 
 
 Areas for improvement
