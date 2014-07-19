@@ -46,14 +46,18 @@
   <ItemGroup>
     <Compile Include="ApiParameter.cs" />
     <Compile Include="ApiSpec.cs" />
+    <Compile Include="ConfigIdResponse.cs" />
     <Compile Include="DataCenter.cs" />
+    <Compile Include="DiskIdResponse.cs" />
     <Compile Include="Error.cs" />
+    <Compile Include="IpAddressResponse.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobIdResponse.cs" />
     <Compile Include="LinodeClient.cs" />
     <Compile Include="LinodeClient.generated.cs" />
     <Compile Include="LinodeException.cs" />
     <Compile Include="ApiMethod.cs" />
+    <Compile Include="LinodeIdResponse.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Plan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

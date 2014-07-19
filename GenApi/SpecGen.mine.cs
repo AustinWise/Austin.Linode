@@ -69,11 +69,38 @@ namespace GenApi
             mCaseCorrections["createfromdistribution"] = "CreateFromDistribution";
             mCaseCorrections["paybalance"] = "PayBalance";
 
-            mReturnType["linode.list"] = typeof(Node[]);
             mReturnType["linode.job.list"] = typeof(Job[]);
             mReturnType["avail.linodeplans"] = typeof(Plan[]);
             mReturnType["avail.datacenters"] = typeof(DataCenter[]);
+
+            mReturnType["linode.boot"] = typeof(JobIdResponse);
+            mReturnType["linode.clone"] = typeof(LinodeIdResponse);
+            mReturnType["linode.create"] = typeof(LinodeIdResponse);
+            mReturnType["linode.delete"] = typeof(LinodeIdResponse);
+            mReturnType["linode.list"] = typeof(Node[]);
             mReturnType["linode.reboot"] = typeof(JobIdResponse);
+            mReturnType["linode.shutdown"] = typeof(JobIdResponse);
+            mReturnType["linode.update"] = typeof(LinodeIdResponse);
+
+            mReturnType["linode.config.create"] = typeof(ConfigIdResponse);
+            mReturnType["linode.config.delete"] = typeof(ConfigIdResponse);
+            //mReturnType["linode.config.list"] = typeof();
+            mReturnType["linode.config.update"] = typeof(ConfigIdResponse);
+
+            mReturnType["linode.disk.create"] = typeof(DiskIdResponse);
+            mReturnType["linode.disk.createfromdistribution"] = typeof(DiskIdResponse);
+            mReturnType["linode.disk.createfromstackscript"] = typeof(DiskIdResponse);
+            mReturnType["linode.disk.delete"] = typeof(DiskIdResponse);
+            mReturnType["linode.disk.duplicate"] = typeof(DiskIdResponse);
+            //mReturnType["linode.disk.list"] = typeof();
+            mReturnType["linode.disk.resize"] = typeof(DiskIdResponse);
+            //mReturnType["linode.disk.update"] = typeof(); //This does not have a jobid?
+
+            mReturnType["linode.ip.addprivate"] = typeof(IpAddressResponse);
+            mReturnType["linode.ip.addpublic"] = typeof(IpAddressResponse);
+            //mReturnType["linode.ip.list"] = typeof();
+            //mReturnType["linode.ip.setrdns"] = typeof();
+            //mReturnType["linode.ip.swap"] = typeof();
         }
 
         static IEnumerable<KeyValuePair<string, ApiParameter>> SortParams(Dictionary<string, ApiParameter> map)
