@@ -46,17 +46,7 @@ namespace Austin.Linode
         public ApiParameterType Type { get; set; }
 
         [JsonProperty("REQUIRED")]
-        object RequiredInternals { get; set; }
-
-        public bool Required
-        {
-            get
-            {
-                if (RequiredInternals is bool)
-                    return (bool)RequiredInternals;
-                return ((string)RequiredInternals).Equals("yes", StringComparison.OrdinalIgnoreCase);
-            }
-        }
+        public bool Required { get; set; }
 
         public Type ClrType
         {
