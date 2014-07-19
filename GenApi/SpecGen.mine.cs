@@ -53,7 +53,10 @@ namespace GenApi
             this.SPEC = spec;
 
             mCaseCorrections["nodebalancer"] = "NodeBalancer";
+            mCaseCorrections["nodebalancers"] = "NodeBalancers";
             mCaseCorrections["addprivate"] = "AddPrivate";
+            mCaseCorrections["addpublic"] = "AddPublic";
+            mCaseCorrections["setrdns"] = "SetRDns";
             mCaseCorrections["linodeplans"] = "LinodePlans";
             mCaseCorrections["webconsoletoken"] = "WebConsoleToken";
             mCaseCorrections["estimateinvoice"] = "EstimateInvoice";
@@ -61,6 +64,7 @@ namespace GenApi
             mCaseCorrections["stackscript"] = "StackScript";
             mCaseCorrections["stackscripts"] = "StackScripts";
             mCaseCorrections["createfromstackscript"] = "CreateFromStackScript";
+            mCaseCorrections["createfromimage"] = "CreateFromImage";
             mCaseCorrections["getapikey"] = "GetApiKey";
             mCaseCorrections["createfromdistribution"] = "CreateFromDistribution";
             mCaseCorrections["paybalance"] = "PayBalance";

@@ -119,6 +119,11 @@ namespace Austin.Linode
                 myParams.Add("PlanID", PlanID.Value.ToString(CultureInfo.InvariantCulture));
             return GetResponse<Austin.Linode.Plan[]>("avail.linodeplans", myParams);
         }
+        public void Avail_NodeBalancers(
+        )
+        {
+            GetResponse<object>("avail.nodebalancers", null);
+        }
         public void Avail_StackScripts(
             int? DistributionID = null,
             string DistributionVendor = null,
@@ -310,6 +315,27 @@ namespace Austin.Linode
                 myParams.Add("Type", Type);
             GetResponse<object>("domain.update", myParams);
         }
+        public void Image_Delete(
+            int ImageID)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("ImageID", ImageID.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("image.delete", myParams);
+        }
+        public void Image_List(
+            int? ImageID = null,
+            int? ListPublic = null,
+            int? pending = null)
+        {
+            var myParams = new Dictionary<string, string>();
+            if (ImageID != null)
+                myParams.Add("ImageID", ImageID.Value.ToString(CultureInfo.InvariantCulture));
+            if (ListPublic != null)
+                myParams.Add("ListPublic", ListPublic.Value.ToString(CultureInfo.InvariantCulture));
+            if (pending != null)
+                myParams.Add("pending", pending.Value.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("image.list", myParams);
+        }
         public void Linode_Boot(
             int LinodeID,
             int? ConfigID = null)
@@ -472,13 +498,25 @@ namespace Austin.Linode
             string Label,
             int LinodeID,
             int Size,
-            string Type)
+            string Type,
+            int? FromDistributionID = null,
+            bool? isReadOnly = null,
+            string rootPass = null,
+            string rootSSHKey = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("Label", Label);
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("Size", Size.ToString(CultureInfo.InvariantCulture));
             myParams.Add("Type", Type);
+            if (FromDistributionID != null)
+                myParams.Add("FromDistributionID", FromDistributionID.Value.ToString(CultureInfo.InvariantCulture));
+            if (isReadOnly != null)
+                myParams.Add("isReadOnly", isReadOnly.Value ? "true" : "false");
+            if (rootPass != null)
+                myParams.Add("rootPass", rootPass);
+            if (rootSSHKey != null)
+                myParams.Add("rootSSHKey", rootSSHKey);
             GetResponse<object>("linode.disk.create", myParams);
         }
         public void Linode_Disk_CreateFromDistribution(
@@ -499,6 +537,24 @@ namespace Austin.Linode
                 myParams.Add("rootSSHKey", rootSSHKey);
             GetResponse<object>("linode.disk.createfromdistribution", myParams);
         }
+        public void Linode_Disk_CreateFromImage(
+            int ImageID,
+            int LinodeID,
+            string rootPass = null,
+            string rootSSHKey = null,
+            int? size = null)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("ImageID", ImageID.ToString(CultureInfo.InvariantCulture));
+            myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
+            if (rootPass != null)
+                myParams.Add("rootPass", rootPass);
+            if (rootSSHKey != null)
+                myParams.Add("rootSSHKey", rootSSHKey);
+            if (size != null)
+                myParams.Add("size", size.Value.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("linode.disk.createfromimage", myParams);
+        }
         public void Linode_Disk_CreateFromStackScript(
             int DistributionID,
             string Label,
@@ -506,7 +562,8 @@ namespace Austin.Linode
             string rootPass,
             int Size,
             int StackScriptID,
-            string StackScriptUDFResponses)
+            string StackScriptUDFResponses,
+            string rootSSHKey = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DistributionID", DistributionID.ToString(CultureInfo.InvariantCulture));
@@ -516,6 +573,8 @@ namespace Austin.Linode
             myParams.Add("Size", Size.ToString(CultureInfo.InvariantCulture));
             myParams.Add("StackScriptID", StackScriptID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("StackScriptUDFResponses", StackScriptUDFResponses);
+            if (rootSSHKey != null)
+                myParams.Add("rootSSHKey", rootSSHKey);
             GetResponse<object>("linode.disk.createfromstackscript", myParams);
         }
         public void Linode_Disk_Delete(
@@ -535,6 +594,24 @@ namespace Austin.Linode
             myParams.Add("DiskID", DiskID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             GetResponse<object>("linode.disk.duplicate", myParams);
+        }
+        public void Linode_Disk_Freeze(
+            int ImageID,
+            int LinodeID,
+            string Description = null,
+            int? isPublic = null,
+            string Label = null)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("ImageID", ImageID.ToString(CultureInfo.InvariantCulture));
+            myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
+            if (Description != null)
+                myParams.Add("Description", Description);
+            if (isPublic != null)
+                myParams.Add("isPublic", isPublic.Value.ToString(CultureInfo.InvariantCulture));
+            if (Label != null)
+                myParams.Add("Label", Label);
+            GetResponse<object>("linode.disk.freeze", myParams);
         }
         public void Linode_Disk_List(
             int LinodeID,
@@ -580,6 +657,13 @@ namespace Austin.Linode
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             GetResponse<object>("linode.ip.addprivate", myParams);
         }
+        public void Linode_Ip_AddPublic(
+            int LinodeID)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("linode.ip.addpublic", myParams);
+        }
         public void Linode_Ip_List(
             int LinodeID,
             int? IPAddressID = null)
@@ -589,6 +673,28 @@ namespace Austin.Linode
             if (IPAddressID != null)
                 myParams.Add("IPAddressID", IPAddressID.Value.ToString(CultureInfo.InvariantCulture));
             GetResponse<object>("linode.ip.list", myParams);
+        }
+        public void Linode_Ip_SetRDns(
+            string Hostname,
+            int IPAddressID)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("Hostname", Hostname);
+            myParams.Add("IPAddressID", IPAddressID.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("linode.ip.setrdns", myParams);
+        }
+        public void Linode_Ip_Swap(
+            int IPAddressID,
+            int? toLinodeID = null,
+            int? withIPAddressID = null)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("IPAddressID", IPAddressID.ToString(CultureInfo.InvariantCulture));
+            if (toLinodeID != null)
+                myParams.Add("toLinodeID", toLinodeID.Value.ToString(CultureInfo.InvariantCulture));
+            if (withIPAddressID != null)
+                myParams.Add("withIPAddressID", withIPAddressID.Value.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("linode.ip.swap", myParams);
         }
         public Austin.Linode.Job[] Linode_Job_List(
             int LinodeID,
@@ -822,17 +928,18 @@ namespace Austin.Linode
         }
         public void NodeBalancer_Create(
             int DatacenterID,
-            int PaymentTerm,
             int? ClientConnThrottle = null,
-            string Label = null)
+            string Label = null,
+            int? PaymentTerm = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DatacenterID", DatacenterID.ToString(CultureInfo.InvariantCulture));
-            myParams.Add("PaymentTerm", PaymentTerm.ToString(CultureInfo.InvariantCulture));
             if (ClientConnThrottle != null)
                 myParams.Add("ClientConnThrottle", ClientConnThrottle.Value.ToString(CultureInfo.InvariantCulture));
             if (Label != null)
                 myParams.Add("Label", Label);
+            if (PaymentTerm != null)
+                myParams.Add("PaymentTerm", PaymentTerm.Value.ToString(CultureInfo.InvariantCulture));
             GetResponse<object>("nodebalancer.create", myParams);
         }
         public void NodeBalancer_Delete(
