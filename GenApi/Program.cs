@@ -37,6 +37,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace GenApi
 {
@@ -44,10 +46,21 @@ namespace GenApi
     {
         static void Main(string[] args)
         {
-            var li = new LinodeClient("~~~");
-            var res = li.Api_Spec();
+            ApiSpec spec;
+            if (args.Any(a => a == "online"))
+            {
+                var li = new LinodeClient("~~~");
+                spec = li.Api_Spec();
+            }
+            else
+            {
+                var res = JsonConvert.DeserializeObject<Response<ApiSpec>>(File.ReadAllText(@"spec.json"));
+                if (res.Errors.Length != 0)
+                    throw new LinodeException(res.Errors);
+                spec = res.Data;
+            }
 
-            var gen = new SpecGen(res);
+            var gen = new SpecGen(spec);
             Console.WriteLine(gen.TransformText());
             Console.ReadLine();
         }
