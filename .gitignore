@@ -6,3 +6,4 @@ obj
 TestResults
 /.vs
 packages
+*.nupkg

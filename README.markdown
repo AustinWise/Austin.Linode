@@ -2,7 +2,14 @@ Austin.Linode, a .NET library for the Linode API
 -----------------------------------------------------------------
 
 An easy use way to use the Linode API from C#.  While every API call is currently
-implemented, only enough response to reboot or resize instance are implemented.
+implemented, only enough response parsing to reboot or resize instance are implemented.
+
+Install
+-------
+
+Available on Nuget as [Austin.Linode](https://www.nuget.org/packages/Austin.Linode/).
+
+[![NuGet](https://img.shields.io/nuget/v/Austin.Linode.svg)](https://www.nuget.org/packages/Austin.Linode/)
 
 Dependencies
 ------------
@@ -23,4 +30,3 @@ Areas for improvement
  - Parse more API responses.
  - Batch requests.
  - Better errors (like an error enumeration).
- - Nuget package.
