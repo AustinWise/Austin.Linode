@@ -54,6 +54,7 @@
     <Compile Include="DataCenter.cs" />
     <Compile Include="DiskIdResponse.cs" />
     <Compile Include="Error.cs" />
+    <Compile Include="IpAddressListEntry.cs" />
     <Compile Include="IpAddressResponse.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobIdResponse.cs" />

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2014, Austin Wise.
+ * Copyright (c) 2016, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1047,7 +1047,7 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="IPAddressID">If specified, limits the result to this IPAddressID</param>
         /// <param name="LinodeID">If specified, limits the result to this LinodeID</param>
-        public void Linode_Ip_List(
+        public Austin.Linode.IpAddressListEntry[] Linode_Ip_List(
                 int? IPAddressID = null,
                 int? LinodeID = null)
         {
@@ -1056,7 +1056,7 @@ namespace Austin.Linode
                 myParams.Add("IPAddressID", IPAddressID.Value.ToString(CultureInfo.InvariantCulture));
             if (LinodeID != null)
                 myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.ip.list", myParams);
+            return GetResponse<Austin.Linode.IpAddressListEntry[]>("linode.ip.list", myParams);
         }
 
         /// <summary>

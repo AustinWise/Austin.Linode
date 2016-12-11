@@ -29,7 +29,7 @@ namespace GenApi
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("/*\r\n *\r\n * Copyright (c) 2014, Austin Wise.\r\n * All rights reserved.\r\n *\r\n * Redi" +
+            this.Write("/*\r\n *\r\n * Copyright (c) 2016, Austin Wise.\r\n * All rights reserved.\r\n *\r\n * Redi" +
                     "stribution and use in source and binary forms, with or without\r\n * modification," +
                     " are permitted provided that the following conditions are\r\n * met:\r\n *\r\n *     *" +
                     " Redistributions of source code must retain the above copyright\r\n *       notice" +

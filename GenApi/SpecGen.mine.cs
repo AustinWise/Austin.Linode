@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2014, Austin Wise.
+ * Copyright (c) 2016, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ namespace GenApi
 
             mReturnType["linode.ip.addprivate"] = typeof(IpAddressResponse);
             mReturnType["linode.ip.addpublic"] = typeof(IpAddressResponse);
-            //mReturnType["linode.ip.list"] = typeof();
+            mReturnType["linode.ip.list"] = typeof(IpAddressListEntry[]);
             //mReturnType["linode.ip.setrdns"] = typeof();
             //mReturnType["linode.ip.swap"] = typeof();
         }
