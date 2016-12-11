@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  *
  * Copyright (c) 2014, Austin Wise.
  * All rights reserved.
@@ -36,14 +36,27 @@ using Newtonsoft.Json;
 
 namespace Austin.Linode
 {
+    /// <summary>
+    /// A response from the Linode API.
+    /// </summary>
+    /// <typeparam name="T">If successful, the type of the <see cref="Data"/></typeparam>
     public class Response<T>
     {
+        /// <summary>
+        /// If an action succeeds, this is zero-length. Otherwise, contains the reasons an action failed.
+        /// </summary>
         [JsonProperty("ERRORARRAY")]
         public Error[] Errors { get; set; }
 
+        /// <summary>
+        /// The API action that was attempted.
+        /// </summary>
         [JsonProperty("ACTION")]
         public string Action { get; set; }
 
+        /// <summary>
+        /// If the action was successful, this is the returned data.
+        /// </summary>
         [JsonProperty("DATA")]
         public T Data { get; set; }
 

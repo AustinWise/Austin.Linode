@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  *
  * Copyright (c) 2014, Austin Wise.
  * All rights reserved.
@@ -49,6 +49,9 @@ namespace Austin.Linode
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
 
+        /// <summary>
+        /// The errors that caused the action to fail.
+        /// </summary>
         public Error[] Errors { get; private set; }
     }
 }

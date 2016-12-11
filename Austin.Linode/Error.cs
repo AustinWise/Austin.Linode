@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  *
  * Copyright (c) 2014, Austin Wise.
  * All rights reserved.

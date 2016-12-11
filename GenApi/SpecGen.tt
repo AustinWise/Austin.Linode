@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Globalization" #>
-/**
+/*
  *
  * Copyright (c) 2014, Austin Wise.
  * All rights reserved.
@@ -63,6 +63,9 @@ for (int i = 0; i < splits.Length; i++)
 	ver[i] = int.Parse(splits[i], CultureInfo.InvariantCulture);
 }
 #>
+        /// <summary>
+        /// From what version of the API spec was this code generated from.
+        /// </summary>
 	public readonly Version GeneratedApiVersion = new Version(<#= ver[0] #>, <#= ver[1] #>, <#= ver[2] #>, <#= ver[3] #>);
 <#
     foreach (var meth in SPEC.Methods.OrderBy(kvp => kvp.Key))
@@ -73,6 +76,24 @@ for (int i = 0; i < splits.Length; i++)
 		Type returnType = typeof(void);
 		if (mReturnType.ContainsKey(meth.Key))
 			returnType = mReturnType[meth.Key];
+#>
+
+        /// <summary>
+        /// <#= meth.Value.Description #>
+        /// </summary>
+<#
+                if (!string.IsNullOrEmpty(meth.Value.Throws))
+                {
+#>
+        /// <exception cref="LinodeException">possible errors: <#= meth.Value.Throws #></exception>
+<#
+                }
+	        foreach (var param in SortParams(meth.Value.Parameters))
+                {
+#>
+        /// <param name="<#= param.Key #>"><#= param.Value.Description #></param>
+<#
+                }
 #>
 	public <#= PrettyPrintType(returnType) #> <#= MethodName(meth.Key) #>(
 <#
