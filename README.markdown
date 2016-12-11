@@ -8,7 +8,7 @@ Dependencies
 ------------
 
  - .NET Framework 4.0 (It should compile just fine on .NET 3.5, a trivial amount of LINQ is used that would have to be removed to compile for .NET 2.0)
- - [Json.NET](http://json.codeplex.com/)
+ - [Newtonsoft Json.NET](http://www.newtonsoft.com/json)
 
 
 License
