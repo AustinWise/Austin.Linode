@@ -22,3 +22,5 @@ Areas for improvement
 
  - Parse more API responses.
  - Batch requests.
+ - Better errors (like an error enumeration).
+ - Nuget package.
