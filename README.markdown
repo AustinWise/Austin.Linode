@@ -43,7 +43,7 @@ This is a list of the different APIs that are tested by the IntegrationTest proj
   - [ ] [account.info](https://www.linode.com/api/account/account.info)
   - [ ] [account.paybalance](https://www.linode.com/api/account/account.paybalance)
   - [ ] [account.updatecard](https://www.linode.com/api/account/account.updatecard)
-- [ ] [api.spec](https://www.linode.com/api/utility/api.spec)
+- [x] [api.spec](https://www.linode.com/api/utility/api.spec)
 - avail
   - [ ] [avail.datacenters](https://www.linode.com/api/utility/avail.datacenters)
   - [ ] [avail.distributions](https://www.linode.com/api/utility/avail.distributions)
