@@ -29,4 +29,7 @@ Areas for improvement
 
  - Parse more API responses.
  - Batch requests.
+ - Support more .NET platforms
+   - Specifically, .NET Standard and older versions of .NET Framework. I'm
+     waiting for the final .NET CLI tooling to ship, since it will change soon.
  - Better errors (like an error enumeration).
