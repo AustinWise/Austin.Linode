@@ -843,7 +843,7 @@ namespace Austin.Linode
         /// <param name="rootPass">Optionally sets the root password at deployment time. If a password is not provided the existing root password of the frozen image will not be modified</param>
         /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys upon image deployment</param>
         /// <param name="size">The size of the disk image to creates. Defaults to the minimum size required for the requested image</param>
-        public void Linode_Disk_CreateFromImage(
+        public Austin.Linode.DiskIdResponse Linode_Disk_CreateFromImage(
                 int ImageID,
                 int LinodeID,
                 string Label = null,
@@ -862,7 +862,7 @@ namespace Austin.Linode
                 myParams.Add("rootSSHKey", rootSSHKey);
             if (size != null)
                 myParams.Add("size", size.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.disk.createfromimage", myParams);
+            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.createfromimage", myParams);
         }
 
         /// <summary>
