@@ -52,27 +52,34 @@ namespace GenApi
                 return string.Join(".", splits.Take(indent + 1));
             });
 
+            var thingsToPrintAtTheEnd = new List<KeyValuePair<string, ApiMethod>>();
+
             foreach (var group in groups)
             {
                 var methCount = group.Count();
-                string indentSpace = new string(' ', indent * 2);
                 if (methCount <= 0)
                     throw new Exception("That's unexpected.");
                 else if (methCount == 1)
                 {
-                    var meth = group.Single();
-                    string firstGroupName = meth.Key.Split('.')[0];
-                    if (firstGroupName == "api" || firstGroupName == "avail" || firstGroupName == "test")
-                    {
-                        firstGroupName = "utility";
-                    }
-                    Console.WriteLine($"{indentSpace}- [ ] [{meth.Key}](https://www.linode.com/api/{firstGroupName}/{meth.Key})");
+                    thingsToPrintAtTheEnd.Add(group.Single());
                 }
                 else
                 {
+                    string indentSpace = new string(' ', indent * 2);
                     Console.WriteLine(indentSpace + "- " + group.Key);
                     printMarkdown(indent + 1, group);
                 }
+            }
+
+            foreach (var meth in thingsToPrintAtTheEnd)
+            {
+                string firstGroupName = meth.Key.Split('.')[0];
+                if (firstGroupName == "api" || firstGroupName == "avail" || firstGroupName == "test")
+                {
+                    firstGroupName = "utility";
+                }
+                string indentSpace = new string(' ', indent * 2);
+                Console.WriteLine($"{indentSpace}- [ ] [{meth.Key}](https://www.linode.com/api/{firstGroupName}/{meth.Key})");
             }
         }
 
