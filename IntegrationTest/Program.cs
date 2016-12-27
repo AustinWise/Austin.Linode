@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Austin.Linode;
 
-namespace TestStuff
+namespace Austin.Libode.IntegrationTest
 {
     class Program
     {

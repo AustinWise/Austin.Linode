@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Austin.Linode", "Austin.Linode\Austin.Linode.csproj", "{D37B4060-F839-4AA8-B5F8-7125AA571C5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStuff", "TestStuff\TestStuff.csproj", "{DB7138C0-C4A7-4680-A83E-6B9CC25E8736}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{DB7138C0-C4A7-4680-A83E-6B9CC25E8736}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenApi", "GenApi\GenApi.csproj", "{850E6432-EBC6-4F9D-BFD5-16AB2547B649}"
 EndProject
