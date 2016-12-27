@@ -7,6 +7,11 @@ using System.Security.Cryptography;
 
 namespace Austin.Libode.IntegrationTest
 {
+    /// <summary>
+    /// Creates a linode in Fremont and tries out various API calls on.
+    /// If the linode is not created during this test, this program assumes there
+    /// is a single linode in the account that tests can be performed on.
+    /// </summary>
     static class Program
     {
         static string LoadApiKey(string[] args)
@@ -35,29 +40,60 @@ namespace Austin.Libode.IntegrationTest
             return apiKey;
         }
 
+        static bool readBoolFromCommandline(string prompt)
+        {
+            Console.WriteLine(prompt + "? (type 'true' or 'false'): ");
+            string text = Console.ReadLine();
+            bool ret;
+            if (!bool.TryParse(text, out ret))
+            {
+                Console.WriteLine("Failed to parse.");
+                Environment.Exit(1);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// A name that someone would be unlikly to use for something they cared about.
+        /// </summary>
+        const string TEST_LINODE_LABEL = "Austin-s_Deletable_Test_Machine";
+
         static void Main(string[] args)
         {
             var li = new LinodeClient(LoadApiKey(args));
 
-            var id = li.Linode_List()[0].Id;
-            int jobId = li.Linode_Reboot(id).JobID;
-            while (true)
+            bool createLinode = readBoolFromCommandline("Do you want to create a VM");
+            bool deleteLinode = readBoolFromCommandline("Do you want to delete the VM at the end");
+
+            int linodeId;
+
+            if (createLinode)
             {
-                var j = li.Linode_Job_List(id, jobId)[0];
+                //create the VM in Fremont
+                var dc = li.Avail_Datacenters()
+                    .Where(d => d.Location.IndexOf("Fremont") >= 0)
+                    .Single();
+                //cheapest plan
+                var plan = li.Avail_LinodePlans()
+                    .OrderBy(p => p.Price)
+                    .First();
 
-                if (j.HostSuccess.HasValue)
-                {
-                    Console.WriteLine("Finished: {0}", j.HostSuccess.Value);
-                    break;
-                }
+                linodeId = li.Linode_Create(dc.Id, plan.Id).LinodeID;
 
-                Console.WriteLine("still waiting");
-                System.Threading.Thread.Sleep(5 * 1000);
+                li.Linode_Update(linodeId, Label: TEST_LINODE_LABEL);
+            }
+            else
+            {
+                var node = li.Linode_List()
+                    .Where(n => n.Label == TEST_LINODE_LABEL)
+                    .Single();
+                linodeId = node.Id;
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Press enter to exit.");
-            Console.ReadLine();
+            if (deleteLinode)
+            {
+                li.Linode_Delete(linodeId);
+            }
         }
     }
 }
