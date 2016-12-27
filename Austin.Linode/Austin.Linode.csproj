@@ -55,7 +55,10 @@
     <Compile Include="ApiSpec.cs" />
     <Compile Include="ConfigIdResponse.cs" />
     <Compile Include="DataCenter.cs" />
+    <Compile Include="DateTimeConverter.cs" />
     <Compile Include="DiskIdResponse.cs" />
+    <Compile Include="DiskResponse.cs" />
+    <Compile Include="DistributionResponse.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="IpAddressListEntry.cs" />
     <Compile Include="IpAddressResponse.cs" />
@@ -67,6 +70,7 @@
     <Compile Include="ApiMethod.cs" />
     <Compile Include="LinodeIdResponse.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="NodeStatus.cs" />
     <Compile Include="Plan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Response.cs" />

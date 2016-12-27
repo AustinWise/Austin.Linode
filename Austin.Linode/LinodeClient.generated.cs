@@ -132,13 +132,13 @@ namespace Austin.Linode
         /// Returns a list of available Linux Distributions.
         /// </summary>
         /// <param name="DistributionID">Limits the results to the specified DistributionID</param>
-        public void Avail_Distributions(
+        public Austin.Linode.DistributionResponse[] Avail_Distributions(
                 int? DistributionID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (DistributionID != null)
                 myParams.Add("DistributionID", DistributionID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("avail.distributions", myParams);
+            return GetResponse<Austin.Linode.DistributionResponse[]>("avail.distributions", myParams);
         }
 
         /// <summary>
@@ -975,7 +975,7 @@ namespace Austin.Linode
         /// </summary>
         /// <param name="LinodeID"></param>
         /// <param name="DiskID"></param>
-        public void Linode_Disk_List(
+        public Austin.Linode.DiskResponse[] Linode_Disk_List(
                 int LinodeID,
                 int? DiskID = null)
         {
@@ -983,7 +983,7 @@ namespace Austin.Linode
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             if (DiskID != null)
                 myParams.Add("DiskID", DiskID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.disk.list", myParams);
+            return GetResponse<Austin.Linode.DiskResponse[]>("linode.disk.list", myParams);
         }
 
         /// <summary>

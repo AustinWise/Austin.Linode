@@ -72,6 +72,7 @@ namespace GenApi
             mReturnType["linode.job.list"] = typeof(Job[]);
             mReturnType["avail.linodeplans"] = typeof(Plan[]);
             mReturnType["avail.datacenters"] = typeof(DataCenter[]);
+            mReturnType["avail.distributions"] = typeof(DistributionResponse[]);
 
             mReturnType["linode.boot"] = typeof(JobIdResponse);
             mReturnType["linode.clone"] = typeof(LinodeIdResponse);
@@ -93,7 +94,7 @@ namespace GenApi
             mReturnType["linode.disk.createfromimage"] = typeof(DiskIdResponse);
             mReturnType["linode.disk.delete"] = typeof(DiskIdResponse);
             mReturnType["linode.disk.duplicate"] = typeof(DiskIdResponse);
-            //mReturnType["linode.disk.list"] = typeof();
+            mReturnType["linode.disk.list"] = typeof(DiskResponse[]);
             mReturnType["linode.disk.resize"] = typeof(DiskIdResponse);
             //mReturnType["linode.disk.update"] = typeof(); //This does not have a jobid?
 

@@ -33,53 +33,45 @@
  */
 
 using Newtonsoft.Json;
+using System;
 
 namespace Austin.Linode
 {
-    public class Node
+    public class DiskResponse
     {
-        [JsonProperty("BACKUPSENABLED")]
-        public bool BackupsEnabled { get; set; }
-
-        [JsonProperty("WATCHDOG")]
-        public bool WatchDogEnabled { get; set; }
-
-        [JsonProperty("LPM_DISPLAYGROUP")]
-        public string DisplayGroup { get; set; }
-
-        //ALERT_BWQUOTA_ENABLED
-
-        [JsonProperty("STATUS")]
-        public NodeStatus Status { get; set; }
-
-        [JsonProperty("TOTALRAM")]
-        public int TotalRam { get; set; }
-
-        //ALERT_DISKIO_THRESHOLD
-        //BACKUPWINDOW
-        //ALERT_BWOUT_ENABLED
-        //ALERT_BWOUT_THRESHOLD
+        [JsonProperty("DISKID")]
+        public int Id { get; set; }
 
         [JsonProperty("LABEL")]
         public string Label { get; set; }
 
-        //ALERT_CPU_ENABLED
-        //ALERT_BWQUOTA_THRESHOLD
-        //ALERT_BWIN_THRESHOLD
-        //BACKUPWEEKLYDAY
-
-        [JsonProperty("DATACENTERID")]
-        public int DatacenterId { get; set; }
-
-        //ALERT_CPU_THRESHOLD
-
-        [JsonProperty("TOTALHD")]
-        public int TotalHdd { get; set; }
-
-        //ALERT_DISKIO_ENABLED
-        //ALERT_BWIN_ENABLED
+        [JsonProperty("TYPE")]
+        public string Type { get; set; }
 
         [JsonProperty("LINODEID")]
-        public int Id { get; set; }
+        public int LinodeId { get; set; }
+
+        [JsonProperty("ISREADONLY")]
+        public bool IsReadonly { get; set; }
+
+        //When I saw this property and it's lack of documentation, I realized that
+        //I'm wasting my implementing this studpid API. It's has obviously not been
+        //designed (or at least not documented) with any seriously-automated use in mind.
+        [JsonProperty("STATUS")]
+        public int Status { get; set; }
+
+        [JsonProperty("UPDATE_DT")]
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime UpdatedTime { get; set; }
+
+        [JsonProperty("CREATE_DT")]
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime CreatedTime { get; set; }
+
+        /// <summary>
+        /// Size in megabytes, probably.
+        /// </summary>
+        [JsonProperty("SIZE")]
+        public int Size { get; set; }
     }
 }

@@ -72,13 +72,13 @@ This is a list of the different APIs that are tested by the IntegrationTest proj
     - [ ] [linode.config.update](https://www.linode.com/api/linode/linode.config.update)
   - linode.disk
     - [ ] [linode.disk.create](https://www.linode.com/api/linode/linode.disk.create)
-    - [ ] [linode.disk.createfromdistribution](https://www.linode.com/api/linode/linode.disk.createfromdistribution)
+    - [x] [linode.disk.createfromdistribution](https://www.linode.com/api/linode/linode.disk.createfromdistribution)
     - [ ] [linode.disk.createfromimage](https://www.linode.com/api/linode/linode.disk.createfromimage)
     - [ ] [linode.disk.createfromstackscript](https://www.linode.com/api/linode/linode.disk.createfromstackscript)
-    - [ ] [linode.disk.delete](https://www.linode.com/api/linode/linode.disk.delete)
+    - [x] [linode.disk.delete](https://www.linode.com/api/linode/linode.disk.delete)
     - [ ] [linode.disk.duplicate](https://www.linode.com/api/linode/linode.disk.duplicate)
     - [ ] [linode.disk.imagize](https://www.linode.com/api/linode/linode.disk.imagize)
-    - [ ] [linode.disk.list](https://www.linode.com/api/linode/linode.disk.list)
+    - [x] [linode.disk.list](https://www.linode.com/api/linode/linode.disk.list)
     - [ ] [linode.disk.resize](https://www.linode.com/api/linode/linode.disk.resize)
     - [ ] [linode.disk.update](https://www.linode.com/api/linode/linode.disk.update)
   - linode.ip

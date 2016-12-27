@@ -43,10 +43,17 @@ namespace LinodeTests
     [TestClass]
     public class ParsingExamples
     {
+        static T GetRes<T>(string json)
+        {
+            var res = JsonConvert.DeserializeObject<Response<T>>(json);
+            Assert.AreEqual(0, res.Errors.Length);
+            return res.Data;
+        }
+
         [TestMethod]
         public void Linode_Ip_List()
         {
-            string json = @"
+            const string json = @"
 {
    ""ERRORARRAY"":[],
    ""ACTION"":""linode.ip.list"",
@@ -67,15 +74,161 @@ namespace LinodeTests
       }
    ]
 }";
-            var res = JsonConvert.DeserializeObject<Response<IpAddressListEntry[]>>(json);
-            Assert.AreEqual(0, res.Errors.Length);
-            Assert.AreEqual(2, res.Data.Length);
+            var res = GetRes<IpAddressListEntry[]>(json);
+            Assert.AreEqual(2, res.Length);
 
-            Assert.AreEqual(8098, res.Data[0].LinodeId);
-            Assert.IsTrue(res.Data[0].IsPublic);
-            Assert.AreEqual("75.127.96.54", res.Data[0].IpAddress);
-            Assert.AreEqual("li22-54.members.linode.com", res.Data[0].ReverseDnsName);
-            Assert.AreEqual(5384, res.Data[0].IpAddressId);
+            Assert.AreEqual(8098, res[0].LinodeId);
+            Assert.IsTrue(res[0].IsPublic);
+            Assert.AreEqual("75.127.96.54", res[0].IpAddress);
+            Assert.AreEqual("li22-54.members.linode.com", res[0].ReverseDnsName);
+            Assert.AreEqual(5384, res[0].IpAddressId);
+        }
+
+        [TestMethod]
+        public void Linode_Disk_List()
+        {
+            const string json = @"
+{
+   ""ERRORARRAY"":[],
+   ""ACTION"":""linode.disk.list"",
+   ""DATA"":[
+      {
+         ""UPDATE_DT"":""2009-06-30 13:19:00.0"",
+         ""DISKID"":55319,
+         ""LABEL"":""test label"",
+         ""TYPE"":""ext3"",
+         ""LINODEID"":8098,
+         ""ISREADONLY"":0,
+         ""STATUS"":1,
+         ""CREATE_DT"":""2008-04-04 10:08:06.0"",
+         ""SIZE"":4096
+      },
+      {
+         ""UPDATE_DT"":""2009-07-18 12:53:43.0"",
+         ""DISKID"":55320,
+         ""LABEL"":""256M Swap Image"",
+         ""TYPE"":""swap"",
+         ""LINODEID"":8098,
+         ""ISREADONLY"":0,
+         ""STATUS"":1,
+         ""CREATE_DT"":""2008-04-04 10:08:06.0"",
+         ""SIZE"":256
+      }
+   ]
+}
+";
+
+            var res = GetRes<DiskResponse[]>(json);
+
+            var d0 = res[0];
+            Assert.AreEqual(new DateTime(2009, 6, 30, 13, 19, 0, DateTimeKind.Utc), d0.UpdatedTime);
+            Assert.AreEqual(55319, d0.Id);
+            Assert.AreEqual("test label", d0.Label);
+            Assert.AreEqual("ext3", d0.Type);
+            Assert.AreEqual(8098, d0.LinodeId);
+            Assert.AreEqual(false, d0.IsReadonly);
+            Assert.AreEqual(1, d0.Status);
+            Assert.AreEqual(new DateTime(2008, 4, 4, 10, 8, 6, DateTimeKind.Utc), d0.CreatedTime);
+            Assert.AreEqual(4096, d0.Size);
+
+            //TODO: test other element of response
+        }
+
+        [TestMethod]
+        public void Avail_Distributions()
+        {
+            const string json = @"
+{
+   ""ERRORARRAY"":[],
+   ""ACTION"":""avail.distributions"",
+   ""DATA"":[
+      {
+         ""IS64BIT"":0,
+         ""LABEL"":""Debian 4.0"",
+         ""MINIMAGESIZE"":200,
+         ""DISTRIBUTIONID"":28,
+         ""CREATE_DT"":""2007-04-18 00:00:00.0"",
+         ""REQUIRESPVOPSKERNEL"":0
+      },
+      {
+         ""IS64BIT"":0,
+         ""LABEL"":""Ubuntu 9.10"",
+         ""MINIMAGESIZE"":400,
+         ""DISTRIBUTIONID"":64,
+         ""CREATE_DT"":""2009-10-31 15:11:29.0"",
+         ""REQUIRESPVOPSKERNEL"":1
+      },
+      {
+         ""IS64BIT"":1,
+         ""LABEL"":""Ubuntu 8.10 64bit"",
+         ""MINIMAGESIZE"":230,
+         ""DISTRIBUTIONID"":49,
+         ""CREATE_DT"":""2008-12-02 00:00:00.0"",
+         ""REQUIRESPVOPSKERNEL"":0
+      }
+   ]
+}
+";
+
+            var res = GetRes<DistributionResponse[]>(json);
+
+            var d0 = res[0];
+            Assert.AreEqual(false, d0.Is64Bit);
+            Assert.AreEqual("Debian 4.0", d0.Label);
+            Assert.AreEqual(200, d0.MinimumImageSize);
+            Assert.AreEqual(28, d0.Id);
+            Assert.AreEqual(new DateTime(2007, 4, 18, 0, 0, 0, DateTimeKind.Utc), d0.CreateTime);
+            Assert.AreEqual(false, d0.RequiresPvopsKernel);
+
+            //TODO: test other element of response
+        }
+
+        [TestMethod]
+        public void Linode_List()
+        {
+            const string json = @"
+{
+   ""ERRORARRAY"":[],
+   ""ACTION"":""linode.list"",
+   ""DATA"":[
+      {
+         ""TOTALXFER"":2000,
+         ""BACKUPSENABLED"":1,
+         ""WATCHDOG"":1,
+         ""LPM_DISPLAYGROUP"":"""",
+         ""ALERT_BWQUOTA_ENABLED"":1,
+         ""STATUS"":2,
+         ""TOTALRAM"":1024,
+         ""ALERT_DISKIO_THRESHOLD"":1000,
+         ""BACKUPWINDOW"":1,
+         ""ALERT_BWOUT_ENABLED"":1,
+         ""ALERT_BWOUT_THRESHOLD"":5,
+         ""LABEL"":""api-node3"",
+         ""ALERT_CPU_ENABLED"":1,
+         ""ALERT_BWQUOTA_THRESHOLD"":80,
+         ""ALERT_BWIN_THRESHOLD"":5,
+         ""BACKUPWEEKLYDAY"":0,
+         ""DATACENTERID"":5,
+         ""ALERT_CPU_THRESHOLD"":90,
+         ""TOTALHD"":40960,
+         ""ALERT_DISKIO_ENABLED"":1,
+         ""ALERT_BWIN_ENABLED"":1,
+         ""LINODEID"":8098,
+         ""CREATE_DT"":""2015-09-22 11:33:06.0"",
+         ""PLANID"":1,
+         ""DISTRIBUTIONVENDOR"": ""Debian"",
+         ""ISXEN"":0,
+         ""ISKVM"":1
+      }
+   ]
+}
+";
+
+            var res = GetRes<Node[]>(json);
+            var d0 = res[0];
+
+            Assert.AreEqual(NodeStatus.PoweredOff, d0.Status);
+            //TODO: test the other fields
         }
     }
 }

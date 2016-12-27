@@ -33,53 +33,31 @@
  */
 
 using Newtonsoft.Json;
+using System;
+using System.Globalization;
 
 namespace Austin.Linode
 {
-    public class Node
+    //TODO: make sure the time zone is actually universal (and delete this entire library if it is not)
+    class DateTimeConverter : JsonConverter
     {
-        [JsonProperty("BACKUPSENABLED")]
-        public bool BackupsEnabled { get; set; }
+        const string FORMAT = "yyyy-MM-dd HH:mm:ss.f";
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(DateTime);
+        }
 
-        [JsonProperty("WATCHDOG")]
-        public bool WatchDogEnabled { get; set; }
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var str = (string)reader.Value;
+            var ret = DateTime.ParseExact(str, FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+            ret = ret.ToUniversalTime();
+            return ret;
+        }
 
-        [JsonProperty("LPM_DISPLAYGROUP")]
-        public string DisplayGroup { get; set; }
-
-        //ALERT_BWQUOTA_ENABLED
-
-        [JsonProperty("STATUS")]
-        public NodeStatus Status { get; set; }
-
-        [JsonProperty("TOTALRAM")]
-        public int TotalRam { get; set; }
-
-        //ALERT_DISKIO_THRESHOLD
-        //BACKUPWINDOW
-        //ALERT_BWOUT_ENABLED
-        //ALERT_BWOUT_THRESHOLD
-
-        [JsonProperty("LABEL")]
-        public string Label { get; set; }
-
-        //ALERT_CPU_ENABLED
-        //ALERT_BWQUOTA_THRESHOLD
-        //ALERT_BWIN_THRESHOLD
-        //BACKUPWEEKLYDAY
-
-        [JsonProperty("DATACENTERID")]
-        public int DatacenterId { get; set; }
-
-        //ALERT_CPU_THRESHOLD
-
-        [JsonProperty("TOTALHD")]
-        public int TotalHdd { get; set; }
-
-        //ALERT_DISKIO_ENABLED
-        //ALERT_BWIN_ENABLED
-
-        [JsonProperty("LINODEID")]
-        public int Id { get; set; }
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            writer.WriteValue(((DateTime)value).ToString(FORMAT, CultureInfo.InvariantCulture));
+        }
     }
 }
