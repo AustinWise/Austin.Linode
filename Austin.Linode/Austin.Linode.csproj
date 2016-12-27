@@ -54,6 +54,7 @@
     <Compile Include="ApiParameter.cs" />
     <Compile Include="ApiSpec.cs" />
     <Compile Include="ConfigIdResponse.cs" />
+    <Compile Include="ConfigResponse.cs" />
     <Compile Include="DataCenter.cs" />
     <Compile Include="DateTimeConverter.cs" />
     <Compile Include="DiskIdResponse.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="IpAddressResponse.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobIdResponse.cs" />
+    <Compile Include="KernelResponse.cs" />
     <Compile Include="LinodeClient.cs" />
     <Compile Include="LinodeClient.generated.cs" />
     <Compile Include="LinodeException.cs" />

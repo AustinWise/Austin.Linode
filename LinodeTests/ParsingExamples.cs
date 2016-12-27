@@ -87,6 +87,7 @@ namespace LinodeTests
         [TestMethod]
         public void Linode_Disk_List()
         {
+            //THE SECOND ITEM HAD AN INVALID DATE STRING ON THE WEBSITE -_-
             const string json = @"
 {
    ""ERRORARRAY"":[],
@@ -229,6 +230,110 @@ namespace LinodeTests
 
             Assert.AreEqual(NodeStatus.PoweredOff, d0.Status);
             //TODO: test the other fields
+        }
+
+        [TestMethod]
+        public void Linode_Config_List()
+        {
+            const string json = @"
+{
+   ""ERRORARRAY"":[],
+   ""ACTION"":""linode.config.list"",
+   ""DATA"":[
+      {
+         ""helper_disableUpdateDB"":1,
+         ""RootDeviceRO"":true,
+         ""RootDeviceCustom"":"""",
+         ""Label"":""My configuration profile"",
+         ""DiskList"":""55319,55590,,55591,55592,,,,"",
+         ""LinodeID"":8098,
+         ""Comments"":"""",
+         ""ConfigID"":31058,
+         ""helper_xen"":1,
+         ""RunLevel"":""default"",
+         ""helper_depmod"":1,
+         ""KernelID"":85,
+         ""RootDeviceNum"":1,
+         ""helper_libtls"":false,
+         ""RAMLimit"":0
+      },
+      {
+         ""helper_disableUpdateDB"":1,
+         ""RootDeviceRO"":true,
+         ""RootDeviceCustom"":"""",
+         ""Label"":""test profile"",
+         ""DiskList"":"",,,,,,,,"",
+         ""LinodeID"":8098,
+         ""Comments"":"""",
+         ""ConfigID"":31231,
+         ""helper_xen"":1,
+         ""RunLevel"":""default"",
+         ""helper_depmod"":1,
+         ""KernelID"":85,
+         ""RootDeviceNum"":1,
+         ""helper_libtls"":false,
+         ""RAMLimit"":0
+      }
+   ]
+}
+";
+
+            var res = GetRes<ConfigResponse[]>(json);
+            var d0 = res[0];
+
+            Assert.AreEqual(8098, d0.LinodeId);
+            Assert.AreEqual(31058, d0.Id);
+            Assert.AreEqual("My configuration profile", d0.Label);
+            //TODO: test the other fields and elements
+        }
+
+        [TestMethod]
+        public void Avail_Kernels()
+        {
+            //THIS WAS INVALID JSON IN THE WEBSITE (missing comma) -_-
+            const string json = @"
+{
+   ""ERRORARRAY"":[],
+   ""ACTION"":""avail.kernels"",
+   ""DATA"":[
+      {
+         ""LABEL"":""Latest Legacy (2.6.18.8-linode22)"",
+         ""ISXEN"":1,
+         ""ISKVM"":0,
+         ""ISPVOPS"":0,
+         ""KERNELID"":60
+      },
+      {
+         ""LABEL"":""2.6.32.16-linode28"",
+         ""ISXEN"":1,
+         ""ISKVM"":0,
+         ""ISPVOPS"":1,
+         ""KERNELID"":123
+      },
+      {
+         ""LABEL"":""pv-grub-x86_32"",
+         ""ISXEN"":1,
+         ""ISKVM"":0,
+         ""ISPVOPS"":0,
+         ""KERNELID"":92
+      },
+      {
+         ""LABEL"":""4.0.2-x86_64-linode56"",
+         ""ISKVM"":1,
+         ""ISXen"":1,
+         ""ISPVOPS"":1,
+         ""KERNELID"":215
+      },
+   ]
+}
+";
+
+            var res = GetRes<KernelResponse[]>(json);
+            var d0 = res[0];
+
+            Assert.AreEqual(60, d0.Id);
+            Assert.AreEqual("Latest Legacy (2.6.18.8-linode22)", d0.Label);
+            //TODO: test the other fields and elements
         }
     }
 }

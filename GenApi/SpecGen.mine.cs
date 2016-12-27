@@ -73,6 +73,7 @@ namespace GenApi
             mReturnType["avail.linodeplans"] = typeof(Plan[]);
             mReturnType["avail.datacenters"] = typeof(DataCenter[]);
             mReturnType["avail.distributions"] = typeof(DistributionResponse[]);
+            mReturnType["avail.kernels"] = typeof(KernelResponse[]);
 
             mReturnType["linode.boot"] = typeof(JobIdResponse);
             mReturnType["linode.clone"] = typeof(LinodeIdResponse);
@@ -85,7 +86,7 @@ namespace GenApi
 
             mReturnType["linode.config.create"] = typeof(ConfigIdResponse);
             mReturnType["linode.config.delete"] = typeof(ConfigIdResponse);
-            //mReturnType["linode.config.list"] = typeof();
+            mReturnType["linode.config.list"] = typeof(ConfigResponse[]);
             mReturnType["linode.config.update"] = typeof(ConfigIdResponse);
 
             mReturnType["linode.disk.create"] = typeof(DiskIdResponse);

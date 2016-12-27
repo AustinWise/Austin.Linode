@@ -45,8 +45,8 @@ This is a list of the different APIs that are tested by the IntegrationTest proj
   - [ ] [account.updatecard](https://www.linode.com/api/account/account.updatecard)
 - avail
   - [x] [avail.datacenters](https://www.linode.com/api/utility/avail.datacenters)
-  - [ ] [avail.distributions](https://www.linode.com/api/utility/avail.distributions)
-  - [ ] [avail.kernels](https://www.linode.com/api/utility/avail.kernels)
+  - [x] [avail.distributions](https://www.linode.com/api/utility/avail.distributions)
+  - [x] [avail.kernels](https://www.linode.com/api/utility/avail.kernels)
   - [x] [avail.linodeplans](https://www.linode.com/api/utility/avail.linodeplans)
   - [ ] [avail.nodebalancers](https://www.linode.com/api/utility/avail.nodebalancers)
   - [ ] [avail.stackscripts](https://www.linode.com/api/utility/avail.stackscripts)
@@ -66,9 +66,9 @@ This is a list of the different APIs that are tested by the IntegrationTest proj
   - [ ] [image.update](https://www.linode.com/api/image/image.update)
 - linode
   - linode.config
-    - [ ] [linode.config.create](https://www.linode.com/api/linode/linode.config.create)
+    - [x] [linode.config.create](https://www.linode.com/api/linode/linode.config.create)
     - [ ] [linode.config.delete](https://www.linode.com/api/linode/linode.config.delete)
-    - [ ] [linode.config.list](https://www.linode.com/api/linode/linode.config.list)
+    - [x] [linode.config.list](https://www.linode.com/api/linode/linode.config.list)
     - [ ] [linode.config.update](https://www.linode.com/api/linode/linode.config.update)
   - linode.disk
     - [ ] [linode.disk.create](https://www.linode.com/api/linode/linode.disk.create)
@@ -87,17 +87,17 @@ This is a list of the different APIs that are tested by the IntegrationTest proj
     - [ ] [linode.ip.list](https://www.linode.com/api/linode/linode.ip.list)
     - [ ] [linode.ip.setrdns](https://www.linode.com/api/linode/linode.ip.setrdns)
     - [ ] [linode.ip.swap](https://www.linode.com/api/linode/linode.ip.swap)
-  - [ ] [linode.boot](https://www.linode.com/api/linode/linode.boot)
+  - [x] [linode.boot](https://www.linode.com/api/linode/linode.boot)
   - [ ] [linode.clone](https://www.linode.com/api/linode/linode.clone)
   - [x] [linode.create](https://www.linode.com/api/linode/linode.create)
   - [x] [linode.delete](https://www.linode.com/api/linode/linode.delete)
-  - [ ] [linode.job.list](https://www.linode.com/api/linode/linode.job.list)
+  - [x] [linode.job.list](https://www.linode.com/api/linode/linode.job.list)
   - [ ] [linode.kvmify](https://www.linode.com/api/linode/linode.kvmify)
   - [x] [linode.list](https://www.linode.com/api/linode/linode.list)
   - [ ] [linode.mutate](https://www.linode.com/api/linode/linode.mutate)
   - [ ] [linode.reboot](https://www.linode.com/api/linode/linode.reboot)
   - [ ] [linode.resize](https://www.linode.com/api/linode/linode.resize)
-  - [ ] [linode.shutdown](https://www.linode.com/api/linode/linode.shutdown)
+  - [x] [linode.shutdown](https://www.linode.com/api/linode/linode.shutdown)
   - [x] [linode.update](https://www.linode.com/api/linode/linode.update)
   - [ ] [linode.webconsoletoken](https://www.linode.com/api/linode/linode.webconsoletoken)
 - nodebalancer

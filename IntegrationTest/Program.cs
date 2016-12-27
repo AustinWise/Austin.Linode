@@ -20,12 +20,15 @@ namespace Austin.Libode.IntegrationTest
         /// </summary>
         const string LINODE_LABEL = "Austin-s_Deletable_Test_Machine";
 
+        const string CONFIG_LABEL = "austin_test_config";
+
         /// <summary>
         /// Expected disk label.
         /// </summary>
         const string DISK_LABEL = "austin_test_label";
 
         const int DISK_SIZE = 4096;
+        const int SWAP_SIZE = 256;
 
         /// <summary>
         /// Ideally, we will have password-based authentication disabled and this invitation will remain unfulfilled.
@@ -65,7 +68,7 @@ namespace Austin.Libode.IntegrationTest
 
         static bool readBoolFromCommandline(string prompt)
         {
-            Console.WriteLine(prompt + "? (type 'true' or 'false'): ");
+            Console.Write(prompt + "? (type 'true' or 'false'): ");
             string text = Console.ReadLine();
             bool ret;
             if (!bool.TryParse(text, out ret))
@@ -145,25 +148,66 @@ namespace Austin.Libode.IntegrationTest
 
             //-------- got a linode, now create a disk --------
 
-            var foundDisk = li.Linode_Disk_List(linodeId).SingleOrDefault();
-            int diskid;
-            if (foundDisk == null)
+            var allFoundDisks = li.Linode_Disk_List(linodeId);
+            int mainDiskId;
+            int swapDiskId;
+            if (allFoundDisks.Length == 0)
             {
                 var distro = li.Avail_Distributions()
                     .Where(d => d.Label == "Ubuntu 16.04 LTS")
                     .Single();
 
-                var creation = li.Linode_Disk_CreateFromDistribution(distro.Id, DISK_LABEL, linodeId,
+                var fsCreation = li.Linode_Disk_CreateFromDistribution(distro.Id, DISK_LABEL, linodeId,
                     DISK_ROOT_PASSWORD, DISK_SIZE, DISK_SSH_KEY);
+                var swapCreation = li.Linode_Disk_Create("swap", linodeId, SWAP_SIZE, "swap");
 
-                waitForJob("create disk", creation);
-                diskid = creation.DiskID;
+                waitForJob("create disk", fsCreation);
+                waitForJob("create swap", swapCreation);
+                mainDiskId = fsCreation.DiskID;
+                swapDiskId = swapCreation.DiskID;
+            }
+            else if (allFoundDisks.Length == 2)
+            {
+                var swapDisk = allFoundDisks.Where(d => d.Type == "swap").Single();
+                var mainDisk = allFoundDisks.Where(d => d.Type != "swap").Single();
+                //assertEqual(DISK_LABEL, mainDisk.Label);
+                mainDiskId = mainDisk.Id;
+                swapDiskId = swapDisk.Id;
             }
             else
             {
-                assertEqual(DISK_LABEL, foundDisk.Label);
-                diskid = foundDisk.Id;
+                throw new Exception("Unexpected number of disks: found " + allFoundDisks.Length);
             }
+
+            //-------- found disks, create config if needed --------
+            int configId;
+            var allConfigs = li.Linode_Config_List(linodeId);
+            if (allConfigs.Length == 0)
+            {
+                var kernel = li.Avail_Kernels()
+                    .Where(k => k.Label.StartsWith("Latest 64 bit"))
+                    .Single();
+
+                var cfg = li.Linode_Config_Create($"{mainDiskId},{swapDiskId}", kernel.Id, CONFIG_LABEL, linodeId);
+                configId = cfg.ConfigID;
+            }
+            else if (allConfigs.Length == 1)
+            {
+                configId = allConfigs[0].Id;
+            }
+            else
+            {
+                throw new Exception("Unexpected number of configs: " + allConfigs.Length);
+            }
+
+            //-------- found config, boot if not already running --------
+
+            if (li.Linode_List(linodeId).Single().Status != NodeStatus.Running)
+            {
+                waitForJob("boot", li.Linode_Boot(linodeId, configId));
+            }
+
+            //TODO: make sure as part of provisioning that only SSH login is supported
 
             //-------- done testing, delete everything --------
 
@@ -174,9 +218,14 @@ namespace Austin.Libode.IntegrationTest
                 {
                     waitForJob("shutdown", li.Linode_Shutdown(linodeId));
                 }
-                waitForJob("delete disk", li.Linode_Disk_Delete(diskid, linodeId));
+
+                var diskDeleteJobs = li.Linode_Disk_List(linodeId).Select(d => li.Linode_Disk_Delete(d.Id, d.LinodeId)).ToArray();
+                foreach (var deleteJob in diskDeleteJobs)
+                {
+                    waitForJob("delete disk " + deleteJob.DiskID, deleteJob);
+                }
+
                 li.Linode_Delete(linodeId);
-                //waitForJob("delete linode", li.Linode_Delete(linodeId));
             }
         }
     }

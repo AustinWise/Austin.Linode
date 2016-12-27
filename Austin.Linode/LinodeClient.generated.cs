@@ -146,7 +146,7 @@ namespace Austin.Linode
         /// </summary>
         /// <param name="isKVM">Show or hide KVM compatible kernels</param>
         /// <param name="isXen">Show or hide Xen compatible kernels</param>
-        public void Avail_Kernels(
+        public Austin.Linode.KernelResponse[] Avail_Kernels(
                 bool? isKVM = null,
                 bool? isXen = null)
         {
@@ -155,7 +155,7 @@ namespace Austin.Linode
                 myParams.Add("isKVM", isKVM.Value ? "true" : "false");
             if (isXen != null)
                 myParams.Add("isXen", isXen.Value ? "true" : "false");
-            GetResponse<object>("avail.kernels", myParams);
+            return GetResponse<Austin.Linode.KernelResponse[]>("avail.kernels", myParams);
         }
 
         /// <summary>
@@ -659,7 +659,7 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="LinodeID"></param>
         /// <param name="ConfigID"></param>
-        public void Linode_Config_List(
+        public Austin.Linode.ConfigResponse[] Linode_Config_List(
                 int LinodeID,
                 int? ConfigID = null)
         {
@@ -667,7 +667,7 @@ namespace Austin.Linode
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             if (ConfigID != null)
                 myParams.Add("ConfigID", ConfigID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.config.list", myParams);
+            return GetResponse<Austin.Linode.ConfigResponse[]>("linode.config.list", myParams);
         }
 
         /// <summary>
