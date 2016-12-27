@@ -94,7 +94,7 @@ namespace GenApi
 
             if (args.Any(a => a == "markdown"))
             {
-                printMarkdown(0, spec.Methods);
+                printMarkdown(0, spec.Methods.OrderBy(kvp => kvp.Key));
                 return;
             }
 
