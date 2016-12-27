@@ -1,5 +1,5 @@
 Austin.Linode, a .NET library for the Linode API
------------------------------------------------------------------
+------------------------------------------------
 
 An easy use way to use the Linode API from C#.  While every API call is currently
 implemented, only enough response parsing to reboot or resize instance are implemented.
@@ -23,13 +23,103 @@ License
 
 Austin.Linode is licensed under a three-clause BSD license.
 
+Enhacement Ideas
+----------------
 
-Areas for improvement
----------------------
-
- - Parse more API responses.
+ - Actually parse more API responses.
  - Batch requests.
  - Support more .NET platforms
    - Specifically, .NET Standard and older versions of .NET Framework. I'm
      waiting for the final .NET CLI tooling to ship, since it will change soon.
  - Better errors (like an error enumeration).
+
+API Testing Status
+------------------
+
+This is a list of the different APIs that are tested by the IntegrationTest project.
+
+- avail
+  - [ ] [avail.kernels](https://www.linode.com/api/utility/avail.kernels)
+  - [ ] [avail.linodeplans](https://www.linode.com/api/utility/avail.linodeplans)
+  - [ ] [avail.distributions](https://www.linode.com/api/utility/avail.distributions)
+  - [ ] [avail.nodebalancers](https://www.linode.com/api/utility/avail.nodebalancers)
+  - [ ] [avail.stackscripts](https://www.linode.com/api/utility/avail.stackscripts)
+  - [ ] [avail.datacenters](https://www.linode.com/api/utility/avail.datacenters)
+- nodebalancer
+  - [ ] [nodebalancer.create](https://www.linode.com/api/nodebalancer/nodebalancer.create)
+  - [ ] [nodebalancer.list](https://www.linode.com/api/nodebalancer/nodebalancer.list)
+  - nodebalancer.node
+    - [ ] [nodebalancer.node.list](https://www.linode.com/api/nodebalancer/nodebalancer.node.list)
+    - [ ] [nodebalancer.node.create](https://www.linode.com/api/nodebalancer/nodebalancer.node.create)
+    - [ ] [nodebalancer.node.delete](https://www.linode.com/api/nodebalancer/nodebalancer.node.delete)
+    - [ ] [nodebalancer.node.update](https://www.linode.com/api/nodebalancer/nodebalancer.node.update)
+  - nodebalancer.config
+    - [ ] [nodebalancer.config.delete](https://www.linode.com/api/nodebalancer/nodebalancer.config.delete)
+    - [ ] [nodebalancer.config.list](https://www.linode.com/api/nodebalancer/nodebalancer.config.list)
+    - [ ] [nodebalancer.config.update](https://www.linode.com/api/nodebalancer/nodebalancer.config.update)
+    - [ ] [nodebalancer.config.create](https://www.linode.com/api/nodebalancer/nodebalancer.config.create)
+  - [ ] [nodebalancer.delete](https://www.linode.com/api/nodebalancer/nodebalancer.delete)
+  - [ ] [nodebalancer.update](https://www.linode.com/api/nodebalancer/nodebalancer.update)
+- stackscript
+  - [ ] [stackscript.delete](https://www.linode.com/api/stackscript/stackscript.delete)
+  - [ ] [stackscript.list](https://www.linode.com/api/stackscript/stackscript.list)
+  - [ ] [stackscript.update](https://www.linode.com/api/stackscript/stackscript.update)
+  - [ ] [stackscript.create](https://www.linode.com/api/stackscript/stackscript.create)
+- image
+  - [ ] [image.list](https://www.linode.com/api/image/image.list)
+  - [ ] [image.delete](https://www.linode.com/api/image/image.delete)
+  - [ ] [image.update](https://www.linode.com/api/image/image.update)
+- linode
+  - [ ] [linode.resize](https://www.linode.com/api/linode/linode.resize)
+  - [ ] [linode.reboot](https://www.linode.com/api/linode/linode.reboot)
+  - linode.disk
+    - [ ] [linode.disk.duplicate](https://www.linode.com/api/linode/linode.disk.duplicate)
+    - [ ] [linode.disk.delete](https://www.linode.com/api/linode/linode.disk.delete)
+    - [ ] [linode.disk.resize](https://www.linode.com/api/linode/linode.disk.resize)
+    - [ ] [linode.disk.update](https://www.linode.com/api/linode/linode.disk.update)
+    - [ ] [linode.disk.list](https://www.linode.com/api/linode/linode.disk.list)
+    - [ ] [linode.disk.createfromdistribution](https://www.linode.com/api/linode/linode.disk.createfromdistribution)
+    - [ ] [linode.disk.create](https://www.linode.com/api/linode/linode.disk.create)
+    - [ ] [linode.disk.createfromimage](https://www.linode.com/api/linode/linode.disk.createfromimage)
+    - [ ] [linode.disk.imagize](https://www.linode.com/api/linode/linode.disk.imagize)
+    - [ ] [linode.disk.createfromstackscript](https://www.linode.com/api/linode/linode.disk.createfromstackscript)
+  - [ ] [linode.list](https://www.linode.com/api/linode/linode.list)
+  - linode.config
+    - [ ] [linode.config.create](https://www.linode.com/api/linode/linode.config.create)
+    - [ ] [linode.config.list](https://www.linode.com/api/linode/linode.config.list)
+    - [ ] [linode.config.update](https://www.linode.com/api/linode/linode.config.update)
+    - [ ] [linode.config.delete](https://www.linode.com/api/linode/linode.config.delete)
+  - linode.ip
+    - [ ] [linode.ip.swap](https://www.linode.com/api/linode/linode.ip.swap)
+    - [ ] [linode.ip.addpublic](https://www.linode.com/api/linode/linode.ip.addpublic)
+    - [ ] [linode.ip.list](https://www.linode.com/api/linode/linode.ip.list)
+    - [ ] [linode.ip.setrdns](https://www.linode.com/api/linode/linode.ip.setrdns)
+    - [ ] [linode.ip.addprivate](https://www.linode.com/api/linode/linode.ip.addprivate)
+  - [ ] [linode.clone](https://www.linode.com/api/linode/linode.clone)
+  - [ ] [linode.update](https://www.linode.com/api/linode/linode.update)
+  - [ ] [linode.boot](https://www.linode.com/api/linode/linode.boot)
+  - [ ] [linode.job.list](https://www.linode.com/api/linode/linode.job.list)
+  - [ ] [linode.webconsoletoken](https://www.linode.com/api/linode/linode.webconsoletoken)
+  - [ ] [linode.mutate](https://www.linode.com/api/linode/linode.mutate)
+  - [ ] [linode.kvmify](https://www.linode.com/api/linode/linode.kvmify)
+  - [ ] [linode.create](https://www.linode.com/api/linode/linode.create)
+  - [ ] [linode.shutdown](https://www.linode.com/api/linode/linode.shutdown)
+  - [ ] [linode.delete](https://www.linode.com/api/linode/linode.delete)
+- domain
+  - [ ] [domain.delete](https://www.linode.com/api/domain/domain.delete)
+  - [ ] [domain.update](https://www.linode.com/api/domain/domain.update)
+  - [ ] [domain.list](https://www.linode.com/api/domain/domain.list)
+  - domain.resource
+    - [ ] [domain.resource.delete](https://www.linode.com/api/domain/domain.resource.delete)
+    - [ ] [domain.resource.create](https://www.linode.com/api/domain/domain.resource.create)
+    - [ ] [domain.resource.list](https://www.linode.com/api/domain/domain.resource.list)
+    - [ ] [domain.resource.update](https://www.linode.com/api/domain/domain.resource.update)
+  - [ ] [domain.create](https://www.linode.com/api/domain/domain.create)
+- account
+  - [ ] [account.paybalance](https://www.linode.com/api/account/account.paybalance)
+  - [ ] [account.info](https://www.linode.com/api/account/account.info)
+  - [ ] [account.estimateinvoice](https://www.linode.com/api/account/account.estimateinvoice)
+  - [ ] [account.updatecard](https://www.linode.com/api/account/account.updatecard)
+- [ ] [test.echo](https://www.linode.com/api/utility/test.echo)
+- [ ] [api.spec](https://www.linode.com/api/utility/api.spec)
+- [ ] [user.getapikey](https://www.linode.com/api/user/user.getapikey)

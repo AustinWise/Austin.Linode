@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2014, Austin Wise.
+ * Copyright (c) 2016, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,8 +42,40 @@ using Newtonsoft.Json;
 
 namespace GenApi
 {
-    class Program
+    static class Program
     {
+        static void printMarkdown(int indent, IEnumerable<KeyValuePair<string, ApiMethod>> methods)
+        {
+            var groups = methods.GroupBy(kvp =>
+            {
+                var splits = kvp.Key.Split('.');
+                return string.Join(".", splits.Take(indent + 1));
+            });
+
+            foreach (var group in groups)
+            {
+                var methCount = group.Count();
+                string indentSpace = new string(' ', indent * 2);
+                if (methCount <= 0)
+                    throw new Exception("That's unexpected.");
+                else if (methCount == 1)
+                {
+                    var meth = group.Single();
+                    string firstGroupName = meth.Key.Split('.')[0];
+                    if (firstGroupName == "api" || firstGroupName == "avail" || firstGroupName == "test")
+                    {
+                        firstGroupName = "utility";
+                    }
+                    Console.WriteLine($"{indentSpace}- [ ] [{meth.Key}](https://www.linode.com/api/{firstGroupName}/{meth.Key})");
+                }
+                else
+                {
+                    Console.WriteLine(indentSpace + "- " + group.Key);
+                    printMarkdown(indent + 1, group);
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
             ApiSpec spec;
@@ -58,6 +90,12 @@ namespace GenApi
                 if (res.Errors.Length != 0)
                     throw new LinodeException(res.Errors);
                 spec = res.Data;
+            }
+
+            if (args.Any(a => a == "markdown"))
+            {
+                printMarkdown(0, spec.Methods);
+                return;
             }
 
             var gen = new SpecGen(spec);
