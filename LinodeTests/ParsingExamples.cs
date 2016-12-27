@@ -128,7 +128,7 @@ namespace LinodeTests
             Assert.AreEqual("ext3", d0.Type);
             Assert.AreEqual(8098, d0.LinodeId);
             Assert.AreEqual(false, d0.IsReadonly);
-            Assert.AreEqual(1, d0.Status);
+            Assert.AreEqual(DiskStatus.Ready, d0.Status);
             Assert.AreEqual(new DateTime(2008, 4, 4, 10, 8, 6, DateTimeKind.Utc), d0.CreatedTime);
             Assert.AreEqual(4096, d0.Size);
 

@@ -54,11 +54,8 @@ namespace Austin.Linode
         [JsonProperty("ISREADONLY")]
         public bool IsReadonly { get; set; }
 
-        //When I saw this property and it's lack of documentation, I realized that
-        //I'm wasting my implementing this studpid API. It's has obviously not been
-        //designed (or at least not documented) with any seriously-automated use in mind.
         [JsonProperty("STATUS")]
-        public int Status { get; set; }
+        public DiskStatus Status { get; set; }
 
         [JsonProperty("UPDATE_DT")]
         [JsonConverter(typeof(DateTimeConverter))]

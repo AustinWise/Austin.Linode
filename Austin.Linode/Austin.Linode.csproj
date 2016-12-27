@@ -59,6 +59,7 @@
     <Compile Include="DateTimeConverter.cs" />
     <Compile Include="DiskIdResponse.cs" />
     <Compile Include="DiskResponse.cs" />
+    <Compile Include="DiskStatus.cs" />
     <Compile Include="DistributionResponse.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="IpAddressListEntry.cs" />
