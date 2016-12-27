@@ -76,12 +76,34 @@ for (int i = 0; i < splits.Length; i++)
 		Type returnType = typeof(void);
 		if (mReturnType.ContainsKey(meth.Key))
 			returnType = mReturnType[meth.Key];
+
+        int firstPeriodNdx = meth.Value.Description.IndexOf(". ");
+        string summary, remarks;
+        if (firstPeriodNdx < 0)
+        {
+            summary = meth.Value.Description.Trim();
+            remarks = null;
+        }
+        else
+        {
+            summary = meth.Value.Description.Substring(0, firstPeriodNdx + 1).Trim();
+            remarks = meth.Value.Description.Substring(firstPeriodNdx + 2).Trim();
+        }
 #>
 
         /// <summary>
-        /// <#= meth.Value.Description #>
+        /// <#= summary #>
         /// </summary>
 <#
+                if (remarks != null)
+                {
+                
+#>
+        /// <remarks>
+        /// <#= remarks #>
+        /// </remarks>
+<#
+                }
                 if (!string.IsNullOrEmpty(meth.Value.Throws))
                 {
 #>

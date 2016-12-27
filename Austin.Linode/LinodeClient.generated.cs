@@ -55,8 +55,11 @@ namespace Austin.Linode
         public readonly Version GeneratedApiVersion = new Version(3, 3, 0, 0);
 
         /// <summary>
-        /// Estimates the invoice for adding a new Linode or NodeBalancer as well as resizing a Linode. This returns two fields: PRICE which is the estimated cost of the invoice, and INVOICE_TO which is the date invoice would be though with timezone set to America/New_York
+        /// Estimates the invoice for adding a new Linode or NodeBalancer as well as resizing a Linode.
         /// </summary>
+        /// <remarks>
+        /// This returns two fields: PRICE which is the estimated cost of the invoice, and INVOICE_TO which is the date invoice would be though with timezone set to America/New_York
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: VALIDATION</exception>
         /// <param name="mode">This is one of the following options: 'linode_new', 'linode_resize', or 'nodebalancer_new'.</param>
         /// <param name="LinodeID">This is the LinodeID you want to resize and is required for mode 'linode_resize'.</param>
@@ -515,8 +518,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Issues a boot job for the provided ConfigID.  If no ConfigID is provided boots the last used configuration profile, or the first configuration profile if this Linode has never been booted.
+        /// Issues a boot job for the provided ConfigID.
         /// </summary>
+        /// <remarks>
+        /// If no ConfigID is provided boots the last used configuration profile, or the first configuration profile if this Linode has never been booted.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="LinodeID"></param>
         /// <param name="ConfigID">The ConfigID to boot, available from linode.config.list().</param>
@@ -532,8 +538,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Creates a new Linode, assigns you full privileges, and then clones the specified LinodeID to the new Linode. There is a limit of 5 active clone operations per source Linode.  It is recommended that the source Linode be powered down during the clone.
+        /// Creates a new Linode, assigns you full privileges, and then clones the specified LinodeID to the new Linode.
         /// </summary>
+        /// <remarks>
+        /// There is a limit of 5 active clone operations per source Linode.  It is recommended that the source Linode be powered down during the clone.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOACCESS,NOTFOUND,CCFAILED,VALIDATION,LINODELIMITER,ACCOUNTLIMIT</exception>
         /// <param name="DatacenterID">The DatacenterID from avail.datacenters() where you wish to place this new Linode</param>
         /// <param name="LinodeID">The LinodeID that you want cloned</param>
@@ -743,8 +752,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Creates a Linode and assigns you full privileges. There is a 250-linodes-per-hour limiter.
+        /// Creates a Linode and assigns you full privileges.
         /// </summary>
+        /// <remarks>
+        /// There is a 250-linodes-per-hour limiter.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOACCESS,CCFAILED,VALIDATION,LINODELIMITER,ACCOUNTLIMIT</exception>
         /// <param name="DatacenterID">The DatacenterID from avail.datacenters() where you wish to place this new Linode</param>
         /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
@@ -763,8 +775,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Immediately removes a Linode from your account and issues a pro-rated credit back to your account, if applicable.  To prevent accidental deletes, this requires the Linode has no Disk images.  You must first delete its disk images."
+        /// Immediately removes a Linode from your account and issues a pro-rated credit back to your account, if applicable.
         /// </summary>
+        /// <remarks>
+        /// To prevent accidental deletes, this requires the Linode has no Disk images.  You must first delete its disk images."
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,LINODENOTEMPTY</exception>
         /// <param name="LinodeID">The LinodeID to delete</param>
         /// <param name="skipChecks">Skips the safety checks and will always delete the Linode</param>
@@ -1016,8 +1031,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Assigns a Private IP to a Linode.  Returns the IPAddressID that was added.
+        /// Assigns a Private IP to a Linode.
         /// </summary>
+        /// <remarks>
+        /// Returns the IPAddressID that was added.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="LinodeID"></param>
         public Austin.Linode.IpAddressResponse Linode_Ip_AddPrivate(
@@ -1029,8 +1047,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Assigns a Public IP to a Linode.  Returns the IPAddressID and IPAddress that was added.
+        /// Assigns a Public IP to a Linode.
         /// </summary>
+        /// <remarks>
+        /// Returns the IPAddressID and IPAddress that was added.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="LinodeID">The LinodeID of the Linode that will be assigned an additional public IP address</param>
         public Austin.Linode.IpAddressResponse Linode_Ip_AddPublic(
@@ -1060,8 +1081,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Sets the rDNS name of a Public IP.  Returns the IPAddressID and IPAddress that were updated.
+        /// Sets the rDNS name of a Public IP.
         /// </summary>
+        /// <remarks>
+        /// Returns the IPAddressID and IPAddress that were updated.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="Hostname">The hostname to set the reverse DNS to</param>
         /// <param name="IPAddressID">The IPAddressID of the address to update</param>
@@ -1076,8 +1100,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Exchanges Public IP addresses between two Linodes within a Datacenter.  The destination of the IP Address can be designated by either the toLinodeID or withIPAddressID parameter.  Returns the resulting relationship of the Linode and IP Address parameters.  When performing a one directional swap, the source is represented by the first of the two resultant array members.
+        /// Exchanges Public IP addresses between two Linodes within a Datacenter.
         /// </summary>
+        /// <remarks>
+        /// The destination of the IP Address can be designated by either the toLinodeID or withIPAddressID parameter.  Returns the resulting relationship of the Linode and IP Address parameters.  When performing a one directional swap, the source is represented by the first of the two resultant array members.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="IPAddressID">The IPAddressID of an IP Address to transfer or swap</param>
         /// <param name="toLinodeID">The LinodeID of the Linode where IPAddressID will be transfered</param>
@@ -1130,8 +1157,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Returns a list of all Linodes user has access or delete to, including some properties.  Status values are -1: Being Created, 0: Brand New, 1: Running, and 2: Powered Off.
+        /// Returns a list of all Linodes user has access or delete to, including some properties.
         /// </summary>
+        /// <remarks>
+        /// Status values are -1: Being Created, 0: Brand New, 1: Running, and 2: Powered Off.
+        /// </remarks>
         /// <param name="LinodeID">Limits the list to the specified LinodeID</param>
         public Austin.Linode.Node[] Linode_List(
                 int? LinodeID = null)
@@ -1173,8 +1203,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Resizes a Linode from one plan to another.  Immediately shuts the Linode down, charges/credits the account, and issue a migration to another host server.
+        /// Resizes a Linode from one plan to another.
         /// </summary>
+        /// <remarks>
+        /// Immediately shuts the Linode down, charges/credits the account, and issue a migration to another host server.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,CCFAILED,VALIDATION</exception>
         /// <param name="LinodeID"></param>
         /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
@@ -1730,8 +1763,11 @@ namespace Austin.Linode
         }
 
         /// <summary>
-        /// Authenticates a Linode Manager user against their username, password, and two-factor token (when enabled), and then returns a new API key, which can be used until it expires.  The number of active keys is limited to 20.  Batch requests will be rejected if they include this API action.
+        /// Authenticates a Linode Manager user against their username, password, and two-factor token (when enabled), and then returns a new API key, which can be used until it expires.
         /// </summary>
+        /// <remarks>
+        /// The number of active keys is limited to 20.  Batch requests will be rejected if they include this API action.
+        /// </remarks>
         /// <exception cref="LinodeException">possible errors: AUTHFAIL,NEEDTOKEN,PASSWORDEXPIRED,KEYLIMIT</exception>
         /// <param name="password"></param>
         /// <param name="username"></param>

@@ -113,20 +113,52 @@ for (int i = 0; i < splits.Length; i++)
 		if (mReturnType.ContainsKey(meth.Key))
 			returnType = mReturnType[meth.Key];
 
+        int firstPeriodNdx = meth.Value.Description.IndexOf(". ");
+        string summary, remarks;
+        if (firstPeriodNdx < 0)
+        {
+            summary = meth.Value.Description.Trim();
+            remarks = null;
+        }
+        else
+        {
+            summary = meth.Value.Description.Substring(0, firstPeriodNdx + 1).Trim();
+            remarks = meth.Value.Description.Substring(firstPeriodNdx + 2).Trim();
+        }
+
             
             #line default
             #line hidden
             this.Write("\r\n        /// <summary>\r\n        /// ");
             
-            #line 82 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(meth.Value.Description));
+            #line 95 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(summary));
             
             #line default
             #line hidden
             this.Write("\r\n        /// </summary>\r\n");
             
-            #line 84 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 97 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
+                if (remarks != null)
+                {
+                
+
+            
+            #line default
+            #line hidden
+            this.Write("        /// <remarks>\r\n        /// ");
+            
+            #line 103 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(remarks));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n        /// </remarks>\r\n");
+            
+            #line 105 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+
+                }
                 if (!string.IsNullOrEmpty(meth.Value.Throws))
                 {
 
@@ -135,14 +167,14 @@ for (int i = 0; i < splits.Length; i++)
             #line hidden
             this.Write("        /// <exception cref=\"LinodeException\">possible errors: ");
             
-            #line 88 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 110 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(meth.Value.Throws));
             
             #line default
             #line hidden
             this.Write("</exception>\r\n");
             
-            #line 89 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 111 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
                 }
 	        foreach (var param in SortParams(meth.Value.Parameters))
@@ -153,21 +185,21 @@ for (int i = 0; i < splits.Length; i++)
             #line hidden
             this.Write("        /// <param name=\"");
             
-            #line 94 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 116 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(param.Key));
             
             #line default
             #line hidden
             this.Write("\">");
             
-            #line 94 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 116 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(param.Value.Description));
             
             #line default
             #line hidden
             this.Write("</param>\r\n");
             
-            #line 95 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 117 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
                 }
 
@@ -176,21 +208,21 @@ for (int i = 0; i < splits.Length; i++)
             #line hidden
             this.Write("\tpublic ");
             
-            #line 98 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 120 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PrettyPrintType(returnType)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 98 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 120 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(MethodName(meth.Key)));
             
             #line default
             #line hidden
             this.Write("(\r\n");
             
-            #line 99 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 121 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
 		int paramCount = meth.Value.Parameters.Count();
 		PushIndent(new string(' ', 12));
@@ -209,7 +241,7 @@ for (int i = 0; i < splits.Length; i++)
             #line hidden
             this.Write("\t)\r\n\t{\r\n");
             
-            #line 114 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 136 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
 		if (meth.Value.HasParameters)
 			WriteLine("var myParams = new Dictionary<string, string>();");
@@ -223,14 +255,14 @@ for (int i = 0; i < splits.Length; i++)
             #line hidden
             this.Write("\t\tif (");
             
-            #line 122 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 144 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(param.Key));
             
             #line default
             #line hidden
             this.Write(" != null)\r\n");
             
-            #line 123 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 145 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
 			}
 
@@ -239,27 +271,27 @@ for (int i = 0; i < splits.Length; i++)
             #line hidden
             this.Write("\t\tmyParams.Add(\"");
             
-            #line 126 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 148 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(param.Key));
             
             #line default
             #line hidden
             this.Write("\", ");
             
-            #line 126 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 148 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(param.Key));
             
             #line default
             #line hidden
             
-            #line 126 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 148 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ToStringPostfix(param.Value)));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 127 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 149 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
 		}
 		if (returnType != typeof(void))
@@ -272,28 +304,28 @@ for (int i = 0; i < splits.Length; i++)
             #line hidden
             this.Write("\t\tGetResponse< ");
             
-            #line 134 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 156 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(returnType == typeof(void) ? "object" : PrettyPrintType(returnType)));
             
             #line default
             #line hidden
             this.Write(" >(\"");
             
-            #line 134 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 156 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(meth.Key));
             
             #line default
             #line hidden
             this.Write("\", ");
             
-            #line 134 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 156 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(meth.Value.HasParameters ? "myParams" : "null"));
             
             #line default
             #line hidden
             this.Write(");\r\n\t}\r\n");
             
-            #line 136 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            #line 158 "D:\AustinWise\Documents\Visual Studio 2015\Projects\Austin.Linode\GenApi\SpecGen.tt"
 
     }
 
