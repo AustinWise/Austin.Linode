@@ -71,7 +71,7 @@ This is a list of the different APIs that are tested by the IntegrationTest proj
     - [x] [linode.config.list](https://www.linode.com/api/linode/linode.config.list)
     - [ ] [linode.config.update](https://www.linode.com/api/linode/linode.config.update)
   - linode.disk
-    - [ ] [linode.disk.create](https://www.linode.com/api/linode/linode.disk.create)
+    - [x] [linode.disk.create](https://www.linode.com/api/linode/linode.disk.create)
     - [x] [linode.disk.createfromdistribution](https://www.linode.com/api/linode/linode.disk.createfromdistribution)
     - [ ] [linode.disk.createfromimage](https://www.linode.com/api/linode/linode.disk.createfromimage)
     - [ ] [linode.disk.createfromstackscript](https://www.linode.com/api/linode/linode.disk.createfromstackscript)
