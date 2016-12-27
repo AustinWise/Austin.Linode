@@ -3,14 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Austin.Linode;
+using System.Security.Cryptography;
 
 namespace Austin.Libode.IntegrationTest
 {
-    class Program
+    static class Program
     {
+        static string LoadApiKey(string[] args)
+        {
+            Properties.Settings settings = Properties.Settings.Default;
+            var settingEncoding = Encoding.UTF8;
+            var settingScope = DataProtectionScope.CurrentUser;
+
+            string apiKey;
+            if (args.Length == 1 && args[0].ToLowerInvariant() == "--set-api-key")
+            {
+                Console.Write("Enter API key: ");
+                apiKey = Console.ReadLine();
+                byte[] encryptedPasword = ProtectedData.Protect(settingEncoding.GetBytes(apiKey), null, settingScope);
+                string base64ApiKey = Convert.ToBase64String(encryptedPasword);
+                settings.ApiKey = base64ApiKey;
+                settings.Save();
+            }
+            else
+            {
+                byte[] base64Password = Convert.FromBase64String(settings.ApiKey);
+                byte[] decryptedPassword = ProtectedData.Unprotect(base64Password, null, settingScope);
+                apiKey = settingEncoding.GetString(decryptedPassword);
+            }
+
+            return apiKey;
+        }
+
         static void Main(string[] args)
         {
-            var li = new LinodeClient("~~~");
+            var li = new LinodeClient(LoadApiKey(args));
 
             var id = li.Linode_List()[0].Id;
             int jobId = li.Linode_Reboot(id).JobID;
