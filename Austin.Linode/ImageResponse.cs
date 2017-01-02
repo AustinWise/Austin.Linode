@@ -34,32 +34,46 @@
 
 using Newtonsoft.Json;
 using System;
-using System.Globalization;
 
 namespace Austin.Linode
 {
-    //TODO: make sure the time zone is actually universal
-    class DateTimeConverter : JsonConverter
+    public class ImageResponse
     {
-        const string FORMAT = "yyyy-MM-dd HH:mm:ss.f";
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(DateTime) || objectType == typeof(DateTime?);
-        }
+        [JsonProperty("CREATE_DT")]
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime Created { get; set; }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var str = (string)reader.Value;
-            if (string.IsNullOrEmpty(str) && objectType == typeof(DateTime?))
-                return new DateTime?();
-            var ret = DateTime.ParseExact(str, FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
-            ret = ret.ToUniversalTime();
-            return ret;
-        }
+        [JsonProperty("CREATOR")]
+        public string Creator { get; set; }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            writer.WriteValue(((DateTime)value).ToString(FORMAT, CultureInfo.InvariantCulture));
-        }
+        [JsonProperty("DESCRIPTION")]
+        public string Description { get; set; }
+
+        [JsonProperty("FS_TYPE")]
+        public string FsType { get; set; }
+
+        [JsonProperty("IMAGEID")]
+        public int Id { get; set; }
+
+        [JsonProperty("ISPUBLIC")]
+        public bool IsPublic { get; set; }
+
+        [JsonProperty("LABEL")]
+        public string Label { get; set; }
+
+        [JsonProperty("LAST_USED_DT")]
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime? LastUsed { get; set; }
+
+        [JsonProperty("MINSIZE")]
+        public int MinSize { get; set; }
+
+        //TODO: make some sort of enumeration
+        [JsonProperty("STATUS")]
+        public string StatusString { get; set; }
+
+        //TODO: make some sort of enumeration
+        [JsonProperty("TYPE")]
+        public string TypeString { get; set; }
     }
 }

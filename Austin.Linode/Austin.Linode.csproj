@@ -63,6 +63,7 @@
     <Compile Include="DistributionResponse.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="ImageIdResponse.cs" />
+    <Compile Include="ImageResponse.cs" />
     <Compile Include="IpAddressListEntry.cs" />
     <Compile Include="IpAddressResponse.cs" />
     <Compile Include="Job.cs" />

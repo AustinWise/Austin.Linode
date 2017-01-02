@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2016, Austin Wise.
+ * Copyright (c) 2017, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -333,6 +333,53 @@ namespace LinodeTests
 
             Assert.AreEqual(60, d0.Id);
             Assert.AreEqual("Latest Legacy (2.6.18.8-linode22)", d0.Label);
+            //TODO: test the other fields and elements
+        }
+
+        [TestMethod]
+        public void Image_List()
+        {
+            const string json = @"
+{
+    ""ACTION"": ""image.list"",
+    ""DATA"": [
+        {
+            ""CREATE_DT"": ""2014-07-30 13:15:16.0"",
+            ""CREATOR"": ""kbar"",
+            ""DESCRIPTION"": """",
+            ""FS_TYPE"": ""ext3"",
+            ""IMAGEID"": 258,
+            ""ISPUBLIC"": 0,
+            ""LABEL"": ""test-disk"",
+            ""LAST_USED_DT"": """",
+            ""MINSIZE"": 9783,
+            ""STATUS"": ""available"",
+            ""TYPE"": ""manual""
+        },
+        {
+            ""CREATE_DT"": ""2014-08-27 23:06:56.0"",
+            ""CREATOR"": """",
+            ""DESCRIPTION"": """",
+            ""FS_TYPE"": ""ext4"",
+            ""IMAGEID"": 3729,
+            ""ISPUBLIC"": 0,
+            ""LABEL"": ""test - [620092] Arch Linux 2014.04 Disk Image"",
+            ""LAST_USED_DT"": """",
+            ""MINSIZE"": 686,
+            ""STATUS"": ""available"",
+            ""TYPE"": ""automatic""
+        }
+    ],
+    ""ERRORARRAY"": []
+}
+";
+
+            var res = GetRes<ImageResponse[]>(json);
+            var i0 = res[0];
+
+            Assert.AreEqual(258, i0.Id);
+            Assert.AreEqual("test-disk", i0.Label);
+            Assert.IsNull(i0.LastUsed);
             //TODO: test the other fields and elements
         }
     }

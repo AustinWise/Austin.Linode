@@ -484,7 +484,7 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="ImageID">Request information for a specific gold-master image</param>
         /// <param name="pending">Show images currently being created.</param>
-        public void Image_List(
+        public Austin.Linode.ImageResponse[] Image_List(
                 int? ImageID = null,
                 int? pending = null)
         {
@@ -493,7 +493,7 @@ namespace Austin.Linode
                 myParams.Add("ImageID", ImageID.Value.ToString(CultureInfo.InvariantCulture));
             if (pending != null)
                 myParams.Add("pending", pending.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("image.list", myParams);
+            return GetResponse<Austin.Linode.ImageResponse[]>("image.list", myParams);
         }
 
         /// <summary>

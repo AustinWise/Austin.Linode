@@ -105,6 +105,8 @@ namespace GenApi
             mReturnType["linode.ip.list"] = typeof(IpAddressListEntry[]);
             //mReturnType["linode.ip.setrdns"] = typeof();
             //mReturnType["linode.ip.swap"] = typeof();
+
+            mReturnType["image.list"] = typeof(ImageResponse[]);
         }
 
         static IEnumerable<KeyValuePair<string, ApiParameter>> SortParams(Dictionary<string, ApiParameter> map)
