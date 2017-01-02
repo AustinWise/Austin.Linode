@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2016, Austin Wise.
+ * Copyright (c) 2017, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -954,7 +954,7 @@ namespace Austin.Linode
         /// <param name="LinodeID">Specifies the source Linode to create the image from</param>
         /// <param name="Description">An optional description of the created image</param>
         /// <param name="Label">Sets the name of the image shown in the base image list, defaults to the source image label</param>
-        public void Linode_Disk_Imagize(
+        public Austin.Linode.ImageIdResponse Linode_Disk_Imagize(
                 int DiskID,
                 int LinodeID,
                 string Description = null,
@@ -967,7 +967,7 @@ namespace Austin.Linode
                 myParams.Add("Description", Description);
             if (Label != null)
                 myParams.Add("Label", Label);
-            GetResponse<object>("linode.disk.imagize", myParams);
+            return GetResponse<Austin.Linode.ImageIdResponse>("linode.disk.imagize", myParams);
         }
 
         /// <summary>

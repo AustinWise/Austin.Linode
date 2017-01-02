@@ -91,10 +91,11 @@ namespace GenApi
 
             mReturnType["linode.disk.create"] = typeof(DiskIdResponse);
             mReturnType["linode.disk.createfromdistribution"] = typeof(DiskIdResponse);
-            mReturnType["linode.disk.createfromstackscript"] = typeof(DiskIdResponse);
             mReturnType["linode.disk.createfromimage"] = typeof(DiskIdResponse);
+            mReturnType["linode.disk.createfromstackscript"] = typeof(DiskIdResponse);
             mReturnType["linode.disk.delete"] = typeof(DiskIdResponse);
             mReturnType["linode.disk.duplicate"] = typeof(DiskIdResponse);
+            mReturnType["linode.disk.imagize"] = typeof(ImageIdResponse);
             mReturnType["linode.disk.list"] = typeof(DiskResponse[]);
             mReturnType["linode.disk.resize"] = typeof(DiskIdResponse);
             //mReturnType["linode.disk.update"] = typeof(); //This does not have a jobid?
