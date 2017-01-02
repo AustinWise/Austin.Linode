@@ -38,7 +38,7 @@ using System.Globalization;
 
 namespace Austin.Linode
 {
-    //TODO: make sure the time zone is actually universal (and delete this entire library if it is not)
+    //TODO: make sure the time zone is actually universal
     class DateTimeConverter : JsonConverter
     {
         const string FORMAT = "yyyy-MM-dd HH:mm:ss.f";

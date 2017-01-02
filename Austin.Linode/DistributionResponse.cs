@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2016, Austin Wise.
+ * Copyright (c) 2017, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,6 +52,7 @@ namespace Austin.Linode
         public int MinimumImageSize { get; set; }
 
         [JsonProperty("CREATE_DT")]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime CreateTime { get; set; }
 
         [JsonProperty("REQUIRESPVOPSKERNEL")]
