@@ -14,7 +14,7 @@ Available on Nuget as [Austin.Linode](https://www.nuget.org/packages/Austin.Lino
 Dependencies
 ------------
 
- - .NET Framework 4.0 (It should compile just fine on .NET 3.5, a trivial amount of LINQ is used that would have to be removed to compile for .NET 2.0)
+ - .NET Framework 4.5 or .NET Standard 2.0
  - [Newtonsoft Json.NET](http://www.newtonsoft.com/json)
 
 
@@ -28,9 +28,6 @@ Enhacement Ideas
 
  - Actually parse more API responses.
  - Batch requests.
- - Support more .NET platforms
-   - Specifically, .NET Standard and older versions of .NET Framework. I'm
-     waiting for the final .NET CLI tooling to ship, since it will change soon.
  - Better errors (like an error enumeration).
 
 API Testing Status
