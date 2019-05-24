@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2014, Austin Wise.
+ * Copyright (c) 2019, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,21 +32,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
 
 namespace Austin.Linode
 {
     public partial class LinodeClient
     {
-        private string mApiKey;
-        private WebClient mWc = new WebClient();
+        private readonly string mApiKey;
+        private readonly WebClient mWc = new WebClient();
 
         public LinodeClient(string apiKey)
         {
+            if (string.IsNullOrEmpty(apiKey))
+                throw new ArgumentNullException(nameof(apiKey));
             this.mApiKey = apiKey;
         }
 

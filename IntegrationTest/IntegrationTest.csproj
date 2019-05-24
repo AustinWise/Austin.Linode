@@ -56,17 +56,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Austin.Linode\Austin.Linode.csproj">
-      <Project>{D37B4060-F839-4AA8-B5F8-7125AA571C5A}</Project>
-      <Name>Austin.Linode</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Austin.Linode\Austin.Linode.csproj">
+      <Project>{d37b4060-f839-4aa8-b5f8-7125aa571c5a}</Project>
+      <Name>Austin.Linode</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2016, Austin Wise.
+ * Copyright (c) 2019, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,11 @@
  */
 
 using Austin.Linode;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using Newtonsoft.Json;
+using System.Linq;
 
 namespace GenApi
 {
