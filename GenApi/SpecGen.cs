@@ -323,6 +323,12 @@ for (int i = 0; i < splits.Length; i++)
             
             #line default
             #line hidden
+            
+            #line 156 "D:\AustinWise\Documents\Visual Studio 2017\Projects\Austin.Linode\GenApi\SpecGen.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(meth.Key == "user.getapikey" ? ", needsAuth: false" : ""));
+            
+            #line default
+            #line hidden
             this.Write(");\r\n\t}\r\n");
             
             #line 158 "D:\AustinWise\Documents\Visual Studio 2017\Projects\Austin.Linode\GenApi\SpecGen.tt"

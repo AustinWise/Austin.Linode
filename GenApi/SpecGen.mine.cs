@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2016, Austin Wise.
+ * Copyright (c) 2019, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -107,6 +107,8 @@ namespace GenApi
             //mReturnType["linode.ip.swap"] = typeof();
 
             mReturnType["image.list"] = typeof(ImageResponse[]);
+
+            mReturnType["user.getapikey"] = typeof(ApiKey);
         }
 
         static IEnumerable<KeyValuePair<string, ApiParameter>> SortParams(Dictionary<string, ApiParameter> map)

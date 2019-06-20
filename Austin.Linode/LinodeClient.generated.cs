@@ -1783,7 +1783,7 @@ namespace Austin.Linode
         /// <param name="expires">Number of hours the key will remain valid, between 0 and 8760. 0 means no expiration. Defaults to 168.</param>
         /// <param name="label">An optional label for this key.</param>
         /// <param name="token">Required when two-factor authentication is enabled. Emergency scratch codes are not permitted.</param>
-        public void User_GetApiKey(
+        public Austin.Linode.ApiKey User_GetApiKey(
                 string password,
                 string username,
                 int? expires = null,
@@ -1799,7 +1799,7 @@ namespace Austin.Linode
                 myParams.Add("label", label);
             if (token != null)
                 myParams.Add("token", token);
-            GetResponse<object>("user.getapikey", myParams);
+            return GetResponse<Austin.Linode.ApiKey>("user.getapikey", myParams, needsAuth: false);
         }
 
         /// <summary>
