@@ -60,8 +60,7 @@ namespace Austin.Linode
             if (needsAuth)
                 args.Add("api_key", mApiKey);
 
-            //TODO: url encode
-            var param = string.Join("&", args.Select(kvp => kvp.Key + "=" + kvp.Value));
+            var param = string.Join("&", args.Select(kvp => kvp.Key + "=" + System.Net.WebUtility.UrlEncode(kvp.Value)));
             string url = "https://api.linode.com/?" + param;
             return mHttp.GetStringAsync(url).GetAwaiter().GetResult();
         }
