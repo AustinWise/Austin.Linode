@@ -37,6 +37,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Austin.Linode
 {
@@ -76,7 +77,7 @@ namespace Austin.Linode
             }
         }
 
-        string GetJson(string apiAction, Dictionary<string, string> args, bool needsAuth = true)
+        async Task<string> GetJsonAsync(string apiAction, Dictionary<string, string> args, bool needsAuth = true)
         {
             if (args == null)
                 args = new Dictionary<string, string>();
@@ -90,12 +91,12 @@ namespace Austin.Linode
 
             var param = string.Join("&", args.Select(kvp => kvp.Key + "=" + System.Net.WebUtility.UrlEncode(kvp.Value)));
             string url = "https://api.linode.com/?" + param;
-            return mHttp.GetStringAsync(url).GetAwaiter().GetResult();
+            return await mHttp.GetStringAsync(url);
         }
 
-        T GetResponse<T>(string apiAction, Dictionary<string, string> args, bool needsAuth = true)
+        async Task<T> GetResponseAsync<T>(string apiAction, Dictionary<string, string> args, bool needsAuth = true)
         {
-            string json = GetJson(apiAction, args, needsAuth);
+            string json = await GetJsonAsync(apiAction, args, needsAuth);
             try
             {
                 var ret = JsonConvert.DeserializeObject<Response<T>>(json);
@@ -112,9 +113,9 @@ namespace Austin.Linode
             }
         }
 
-        public ApiSpec Api_Spec()
+        public async Task<ApiSpec> Api_SpecAsync()
         {
-            return GetResponse<ApiSpec>("api.spec", null, false);
+            return await GetResponseAsync<ApiSpec>("api.spec", null, false);
         }
     }
 }

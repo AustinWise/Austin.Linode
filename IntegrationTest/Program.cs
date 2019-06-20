@@ -38,6 +38,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Austin.Libode.IntegrationTest
 {
@@ -70,30 +71,43 @@ namespace Austin.Libode.IntegrationTest
 
         const string DISK_SSH_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAnJbFVIfhuOtHbIV5/CRzjpMHEnxhwGk7tOFObxe3SeMCd2i1D278RoepOjMuT24Gz/h3J2ZUut7j6W3jRt9m1AqYevB4WnZWNdR33OzWu0y9e+a554QpOiLA074bXHjjv1SM0VSNV3NBZT9ASdHDcRdMWVjuDvQN7d7LIBv/bhIxGUDx9+pbHiahyqtDjq5BaNnA36kK8xA/nw6fqVvp/F3gIUWdjIYgu53qC/4Mgata0rKCScgd1bSstHQYSZrfsI+MK5fKzwl3iMe6tjlkD6bRVoO3ea4X7Votle5l6AI4zzjHoejF/ib88j9XCLLa04PGLRlmPmkD5CZe6BwiKQ== AustinWise@gmail.com";
 
-        static LinodeClient li;
+        static readonly LinodeClient li = new LinodeClient();
         static int linodeId;
 
-        static string LoadApiKey(string[] args)
+        static async Task<string> LoadApiKey(string[] args)
         {
             Properties.Settings settings = Properties.Settings.Default;
             var settingEncoding = Encoding.UTF8;
-            var settingScope = DataProtectionScope.CurrentUser;
+            const DataProtectionScope settingScope = DataProtectionScope.CurrentUser;
 
+            bool saveKey = true;
             string apiKey;
             if (args.Length == 1 && args[0].ToLowerInvariant() == "--set-api-key")
             {
                 Console.Write("Enter API key: ");
                 apiKey = Console.ReadLine();
+            }
+            else if (args.Length == 2 && args[0].ToLowerInvariant() == "--username")
+            {
+                string username = args[1];
+                Console.Write("Enter Password: ");
+                string password = Console.ReadLine();
+                apiKey = (await li.User_GetApiKeyAsync(password, username)).Key;
+            }
+            else
+            {
+                saveKey = false;
+                byte[] base64Password = Convert.FromBase64String(settings.ApiKey);
+                byte[] decryptedPassword = ProtectedData.Unprotect(base64Password, null, settingScope);
+                apiKey = settingEncoding.GetString(decryptedPassword);
+            }
+
+            if (saveKey)
+            {
                 byte[] encryptedPasword = ProtectedData.Protect(settingEncoding.GetBytes(apiKey), null, settingScope);
                 string base64ApiKey = Convert.ToBase64String(encryptedPasword);
                 settings.ApiKey = base64ApiKey;
                 settings.Save();
-            }
-            else
-            {
-                byte[] base64Password = Convert.FromBase64String(settings.ApiKey);
-                byte[] decryptedPassword = ProtectedData.Unprotect(base64Password, null, settingScope);
-                apiKey = settingEncoding.GetString(decryptedPassword);
             }
 
             return apiKey;
@@ -120,13 +134,13 @@ namespace Austin.Libode.IntegrationTest
 
         //TODO: consider adding something like this to the library
         //Though how to implement pooling will require some thought and research.
-        static void waitForJob(string desc, JobIdResponse jobRes)
+        static async Task waitForJob(string desc, JobIdResponse jobRes)
         {
             Console.WriteLine(desc);
             int secs = 1;
             while (true)
             {
-                var status = li.Linode_Job_List(linodeId, jobRes.JobID).Single();
+                var status = (await li.Linode_Job_ListAsync(linodeId, jobRes.JobID)).Single();
                 if (status.HostSuccess.HasValue)
                 {
                     if (!status.HostSuccess.Value)
@@ -135,14 +149,14 @@ namespace Austin.Libode.IntegrationTest
                 }
 
                 Console.WriteLine($"Waiting {secs} seconds for {desc}");
-                Thread.Sleep(secs * 1000);
+                await Task.Delay(secs * 1000);
                 secs = Math.Min(10, secs * 2);
             }
         }
 
-        private static void createLinode(bool createIfNotFound)
+        private static async Task createLinode(bool createIfNotFound)
         {
-            var foundNode = li.Linode_List()
+            var foundNode = (await li.Linode_ListAsync())
                 .Where(n => n.Label == LINODE_LABEL)
                 .SingleOrDefault();
 
@@ -157,45 +171,45 @@ namespace Austin.Libode.IntegrationTest
             }
 
             //create the VM in Fremont
-            var dc = li.Avail_Datacenters()
+            var dc = (await li.Avail_DatacentersAsync())
                 .Where(d => d.Location.IndexOf("Fremont") >= 0)
                 .Single();
             //cheapest plan
-            var plan = li.Avail_LinodePlans()
+            var plan = (await li.Avail_LinodePlansAsync())
                 .OrderBy(p => p.Price)
                 .First();
 
-            linodeId = li.Linode_Create(dc.Id, plan.Id).LinodeID;
+            linodeId = (await li.Linode_CreateAsync(dc.Id, plan.Id)).LinodeID;
 
-            li.Linode_Update(linodeId, Label: LINODE_LABEL);
+            await li.Linode_UpdateAsync(linodeId, Label: LINODE_LABEL);
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            li = new LinodeClient(LoadApiKey(args));
+            li.ApiKey = await LoadApiKey(args);
 
             bool createLinode = readBoolFromCommandline("Do you want to create a VM");
             bool deleteLinode = readBoolFromCommandline("Do you want to delete the VM at the end");
 
-            Program.createLinode(createLinode);
+            await Program.createLinode(createLinode);
 
             //-------- got a linode, now create a disk --------
 
-            var allFoundDisks = li.Linode_Disk_List(linodeId);
+            var allFoundDisks = await li.Linode_Disk_ListAsync(linodeId);
             int mainDiskId;
             int swapDiskId;
             if (allFoundDisks.Length == 0)
             {
-                var distro = li.Avail_Distributions()
+                var distro = (await li.Avail_DistributionsAsync())
                     .Where(d => d.Label == "Ubuntu 16.04 LTS")
                     .Single();
 
-                var fsCreation = li.Linode_Disk_CreateFromDistribution(distro.Id, DISK_LABEL, linodeId,
+                var fsCreation = await li.Linode_Disk_CreateFromDistributionAsync(distro.Id, DISK_LABEL, linodeId,
                     DISK_ROOT_PASSWORD, DISK_SIZE, DISK_SSH_KEY);
-                var swapCreation = li.Linode_Disk_Create("swap", linodeId, SWAP_SIZE, "swap");
+                var swapCreation = await li.Linode_Disk_CreateAsync("swap", linodeId, SWAP_SIZE, "swap");
 
-                waitForJob("create disk", fsCreation);
-                waitForJob("create swap", swapCreation);
+                await waitForJob("create disk", fsCreation);
+                await waitForJob("create swap", swapCreation);
                 mainDiskId = fsCreation.DiskID;
                 swapDiskId = swapCreation.DiskID;
             }
@@ -214,14 +228,14 @@ namespace Austin.Libode.IntegrationTest
 
             //-------- found disks, create config if needed --------
             int configId;
-            var allConfigs = li.Linode_Config_List(linodeId);
+            var allConfigs = await li.Linode_Config_ListAsync(linodeId);
             if (allConfigs.Length == 0)
             {
-                var kernel = li.Avail_Kernels()
+                var kernel = (await li.Avail_KernelsAsync())
                     .Where(k => k.Label.StartsWith("Latest 64 bit"))
                     .Single();
 
-                var cfg = li.Linode_Config_Create($"{mainDiskId},{swapDiskId}", kernel.Id, CONFIG_LABEL, linodeId);
+                var cfg = await li.Linode_Config_CreateAsync($"{mainDiskId},{swapDiskId}", kernel.Id, CONFIG_LABEL, linodeId);
                 configId = cfg.ConfigID;
             }
             else if (allConfigs.Length == 1)
@@ -235,9 +249,9 @@ namespace Austin.Libode.IntegrationTest
 
             //-------- found config, boot if not already running --------
 
-            if (li.Linode_List(linodeId).Single().Status != NodeStatus.Running)
+            if ((await li.Linode_ListAsync(linodeId)).Single().Status != NodeStatus.Running)
             {
-                waitForJob("boot", li.Linode_Boot(linodeId, configId));
+                await waitForJob("boot", await li.Linode_BootAsync(linodeId, configId));
             }
 
             //TODO: make sure as part of provisioning that only SSH login is supported
@@ -246,19 +260,20 @@ namespace Austin.Libode.IntegrationTest
 
             if (deleteLinode)
             {
-                var nodeStatus = li.Linode_List(linodeId).Single().Status;
+                var nodeStatus = (await li.Linode_ListAsync(linodeId)).Single().Status;
                 if (nodeStatus == NodeStatus.Running)
                 {
-                    waitForJob("shutdown", li.Linode_Shutdown(linodeId));
+                    await waitForJob("shutdown", await li.Linode_ShutdownAsync(linodeId));
                 }
 
-                var diskDeleteJobs = li.Linode_Disk_List(linodeId).Select(d => li.Linode_Disk_Delete(d.Id, d.LinodeId)).ToArray();
-                foreach (var deleteJob in diskDeleteJobs)
+                var diskDeleteJobs = (await li.Linode_Disk_ListAsync(linodeId)).Select(d => li.Linode_Disk_DeleteAsync(d.Id, d.LinodeId)).ToArray();
+                foreach (var deleteJobTask in diskDeleteJobs)
                 {
-                    waitForJob("delete disk " + deleteJob.DiskID, deleteJob);
+                    var deleteJob = await deleteJobTask;
+                    await waitForJob("delete disk " + deleteJob.DiskID, deleteJob);
                 }
 
-                li.Linode_Delete(linodeId);
+                await li.Linode_DeleteAsync(linodeId);
             }
         }
     }

@@ -44,6 +44,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Austin.Linode
 {
@@ -53,6 +54,7 @@ namespace Austin.Linode
         /// From what version of the API spec was this code generated from.
         /// </summary>
         public readonly Version GeneratedApiVersion = new Version(3, 3, 0, 0);
+
 
         /// <summary>
         /// Estimates the invoice for adding a new Linode or NodeBalancer as well as resizing a Linode.
@@ -66,10 +68,30 @@ namespace Austin.Linode
         /// <param name="PaymentTerm">Subscription term in months. One of: 1, 12, or 24. This is required for modes 'linode_new' and 'nodebalancer_new'.</param>
         /// <param name="PlanID">The desired PlanID available from avail.LinodePlans(). This is required for modes 'linode_new' and 'linode_resize'.</param>
         public void Account_EstimateInvoice(
-                string mode,
-                int? LinodeID = null,
-                int? PaymentTerm = null,
-                int? PlanID = null)
+            string mode,
+            int? LinodeID = null,
+            int? PaymentTerm = null,
+            int? PlanID = null)
+        {
+            Task.Run(() => Account_EstimateInvoiceAsync(mode, LinodeID, PaymentTerm, PlanID)).Wait();
+        }
+
+        /// <summary>
+        /// Estimates the invoice for adding a new Linode or NodeBalancer as well as resizing a Linode.
+        /// </summary>
+        /// <remarks>
+        /// This returns two fields: PRICE which is the estimated cost of the invoice, and INVOICE_TO which is the date invoice would be though with timezone set to America/New_York
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: VALIDATION</exception>
+        /// <param name="mode">This is one of the following options: 'linode_new', 'linode_resize', or 'nodebalancer_new'.</param>
+        /// <param name="LinodeID">This is the LinodeID you want to resize and is required for mode 'linode_resize'.</param>
+        /// <param name="PaymentTerm">Subscription term in months. One of: 1, 12, or 24. This is required for modes 'linode_new' and 'nodebalancer_new'.</param>
+        /// <param name="PlanID">The desired PlanID available from avail.LinodePlans(). This is required for modes 'linode_new' and 'linode_resize'.</param>
+        public async Task Account_EstimateInvoiceAsync(
+            string mode,
+            int? LinodeID = null,
+            int? PaymentTerm = null,
+            int? PlanID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("mode", mode);
@@ -79,67 +101,125 @@ namespace Austin.Linode
                 myParams.Add("PaymentTerm", PaymentTerm.Value.ToString(CultureInfo.InvariantCulture));
             if (PlanID != null)
                 myParams.Add("PlanID", PlanID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("account.estimateinvoice", myParams);
+            await GetResponseAsync<object>("account.estimateinvoice", myParams);
         }
+
 
         /// <summary>
         /// Shows information about your account such as the date your account was opened as well as your network utilization for the current month in gigabytes.
         /// </summary>
         public void Account_Info(
-        )
+)
         {
-            GetResponse<object>("account.info", null);
+            Task.Run(() => Account_InfoAsync()).Wait();
         }
+
+        /// <summary>
+        /// Shows information about your account such as the date your account was opened as well as your network utilization for the current month in gigabytes.
+        /// </summary>
+        public async Task Account_InfoAsync(
+)
+        {
+            await GetResponseAsync<object>("account.info", null);
+        }
+
 
         /// <summary>
         /// Pays current balance on file, returning it in the response.
         /// </summary>
         /// <exception cref="LinodeException">possible errors: CCEXPIRED,CCFAILED,NOACCESS,PAYMENTLIMITER,VALIDATION</exception>
         public void Account_PayBalance(
-        )
+)
         {
-            GetResponse<object>("account.paybalance", null);
+            Task.Run(() => Account_PayBalanceAsync()).Wait();
         }
 
         /// <summary>
-        /// 
+        /// Pays current balance on file, returning it in the response.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: CCEXPIRED,CCFAILED,NOACCESS,PAYMENTLIMITER,VALIDATION</exception>
+        public async Task Account_PayBalanceAsync(
+)
+        {
+            await GetResponseAsync<object>("account.paybalance", null);
+        }
+
+
+        /// <summary>
+        ///
         /// </summary>
         /// <param name="ccExpMonth"></param>
         /// <param name="ccExpYear"></param>
         /// <param name="ccNumber"></param>
         public void Account_UpdateCard(
-                int ccExpMonth,
-                int ccExpYear,
-                int ccNumber)
+            int ccExpMonth,
+            int ccExpYear,
+            int ccNumber)
+        {
+            Task.Run(() => Account_UpdateCardAsync(ccExpMonth, ccExpYear, ccNumber)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ccExpMonth"></param>
+        /// <param name="ccExpYear"></param>
+        /// <param name="ccNumber"></param>
+        public async Task Account_UpdateCardAsync(
+            int ccExpMonth,
+            int ccExpYear,
+            int ccNumber)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ccExpMonth", ccExpMonth.ToString(CultureInfo.InvariantCulture));
             myParams.Add("ccExpYear", ccExpYear.ToString(CultureInfo.InvariantCulture));
             myParams.Add("ccNumber", ccNumber.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("account.updatecard", myParams);
+            await GetResponseAsync<object>("account.updatecard", myParams);
         }
+
 
         /// <summary>
         /// Returns a list of Linode data center facilities.
         /// </summary>
         public Austin.Linode.DataCenter[] Avail_Datacenters(
-        )
+)
         {
-            return GetResponse<Austin.Linode.DataCenter[]>("avail.datacenters", null);
+            return Task.Run(() => Avail_DatacentersAsync()).Result;
         }
+
+        /// <summary>
+        /// Returns a list of Linode data center facilities.
+        /// </summary>
+        public async Task<Austin.Linode.DataCenter[]> Avail_DatacentersAsync(
+)
+        {
+            return await GetResponseAsync<Austin.Linode.DataCenter[]>("avail.datacenters", null);
+        }
+
 
         /// <summary>
         /// Returns a list of available Linux Distributions.
         /// </summary>
         /// <param name="DistributionID">Limits the results to the specified DistributionID</param>
         public Austin.Linode.DistributionResponse[] Avail_Distributions(
-                int? DistributionID = null)
+            int? DistributionID = null)
+        {
+            return Task.Run(() => Avail_DistributionsAsync(DistributionID)).Result;
+        }
+
+        /// <summary>
+        /// Returns a list of available Linux Distributions.
+        /// </summary>
+        /// <param name="DistributionID">Limits the results to the specified DistributionID</param>
+        public async Task<Austin.Linode.DistributionResponse[]> Avail_DistributionsAsync(
+            int? DistributionID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (DistributionID != null)
                 myParams.Add("DistributionID", DistributionID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.DistributionResponse[]>("avail.distributions", myParams);
+            return await GetResponseAsync<Austin.Linode.DistributionResponse[]>("avail.distributions", myParams);
         }
+
 
         /// <summary>
         /// List available kernels.
@@ -147,38 +227,72 @@ namespace Austin.Linode
         /// <param name="isKVM">Show or hide KVM compatible kernels</param>
         /// <param name="isXen">Show or hide Xen compatible kernels</param>
         public Austin.Linode.KernelResponse[] Avail_Kernels(
-                bool? isKVM = null,
-                bool? isXen = null)
+            bool? isKVM = null,
+            bool? isXen = null)
+        {
+            return Task.Run(() => Avail_KernelsAsync(isKVM, isXen)).Result;
+        }
+
+        /// <summary>
+        /// List available kernels.
+        /// </summary>
+        /// <param name="isKVM">Show or hide KVM compatible kernels</param>
+        /// <param name="isXen">Show or hide Xen compatible kernels</param>
+        public async Task<Austin.Linode.KernelResponse[]> Avail_KernelsAsync(
+            bool? isKVM = null,
+            bool? isXen = null)
         {
             var myParams = new Dictionary<string, string>();
             if (isKVM != null)
                 myParams.Add("isKVM", isKVM.Value ? "true" : "false");
             if (isXen != null)
                 myParams.Add("isXen", isXen.Value ? "true" : "false");
-            return GetResponse<Austin.Linode.KernelResponse[]>("avail.kernels", myParams);
+            return await GetResponseAsync<Austin.Linode.KernelResponse[]>("avail.kernels", myParams);
         }
+
 
         /// <summary>
         /// Returns a structure of Linode PlanIDs containing the Plan label and the availability in each Datacenter.
         /// </summary>
         /// <param name="PlanID">Limits the list to the specified PlanID</param>
         public Austin.Linode.Plan[] Avail_LinodePlans(
-                int? PlanID = null)
+            int? PlanID = null)
+        {
+            return Task.Run(() => Avail_LinodePlansAsync(PlanID)).Result;
+        }
+
+        /// <summary>
+        /// Returns a structure of Linode PlanIDs containing the Plan label and the availability in each Datacenter.
+        /// </summary>
+        /// <param name="PlanID">Limits the list to the specified PlanID</param>
+        public async Task<Austin.Linode.Plan[]> Avail_LinodePlansAsync(
+            int? PlanID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (PlanID != null)
                 myParams.Add("PlanID", PlanID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.Plan[]>("avail.linodeplans", myParams);
+            return await GetResponseAsync<Austin.Linode.Plan[]>("avail.linodeplans", myParams);
         }
+
 
         /// <summary>
         /// Returns NodeBalancer pricing information.
         /// </summary>
         public void Avail_NodeBalancers(
-        )
+)
         {
-            GetResponse<object>("avail.nodebalancers", null);
+            Task.Run(() => Avail_NodeBalancersAsync()).Wait();
         }
+
+        /// <summary>
+        /// Returns NodeBalancer pricing information.
+        /// </summary>
+        public async Task Avail_NodeBalancersAsync(
+)
+        {
+            await GetResponseAsync<object>("avail.nodebalancers", null);
+        }
+
 
         /// <summary>
         /// Returns a list of available public StackScripts.
@@ -187,9 +301,23 @@ namespace Austin.Linode
         /// <param name="DistributionVendor">Debian, Ubuntu, Fedora, etc.</param>
         /// <param name="keywords">Search terms</param>
         public void Avail_StackScripts(
-                int? DistributionID = null,
-                string DistributionVendor = null,
-                string keywords = null)
+            int? DistributionID = null,
+            string DistributionVendor = null,
+            string keywords = null)
+        {
+            Task.Run(() => Avail_StackScriptsAsync(DistributionID, DistributionVendor, keywords)).Wait();
+        }
+
+        /// <summary>
+        /// Returns a list of available public StackScripts.
+        /// </summary>
+        /// <param name="DistributionID">Limit the results to StackScripts that can be applied to this DistributionID</param>
+        /// <param name="DistributionVendor">Debian, Ubuntu, Fedora, etc.</param>
+        /// <param name="keywords">Search terms</param>
+        public async Task Avail_StackScriptsAsync(
+            int? DistributionID = null,
+            string DistributionVendor = null,
+            string keywords = null)
         {
             var myParams = new Dictionary<string, string>();
             if (DistributionID != null)
@@ -198,8 +326,9 @@ namespace Austin.Linode
                 myParams.Add("DistributionVendor", DistributionVendor);
             if (keywords != null)
                 myParams.Add("keywords", keywords);
-            GetResponse<object>("avail.stackscripts", myParams);
+            await GetResponseAsync<object>("avail.stackscripts", myParams);
         }
+
 
         /// <summary>
         /// Create a domain record.
@@ -218,18 +347,51 @@ namespace Austin.Linode
         /// <param name="status">0, 1, or 2 (disabled, active, edit mode)</param>
         /// <param name="TTL_sec"></param>
         public void Domain_Create(
-                string Domain,
-                string Type,
-                string axfr_ips = null,
-                string Description = null,
-                int? Expire_sec = null,
-                string lpm_displayGroup = null,
-                string master_ips = null,
-                int? Refresh_sec = null,
-                int? Retry_sec = null,
-                string SOA_Email = null,
-                int? status = null,
-                int? TTL_sec = null)
+            string Domain,
+            string Type,
+            string axfr_ips = null,
+            string Description = null,
+            int? Expire_sec = null,
+            string lpm_displayGroup = null,
+            string master_ips = null,
+            int? Refresh_sec = null,
+            int? Retry_sec = null,
+            string SOA_Email = null,
+            int? status = null,
+            int? TTL_sec = null)
+        {
+            Task.Run(() => Domain_CreateAsync(Domain, Type, axfr_ips, Description, Expire_sec, lpm_displayGroup, master_ips, Refresh_sec, Retry_sec, SOA_Email, status, TTL_sec)).Wait();
+        }
+
+        /// <summary>
+        /// Create a domain record.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOACCESS,VALIDATION</exception>
+        /// <param name="Domain">The zone's name</param>
+        /// <param name="Type">master or slave</param>
+        /// <param name="axfr_ips">IP addresses allowed to AXFR the entire zone, semicolon separated</param>
+        /// <param name="Description">Currently undisplayed.</param>
+        /// <param name="Expire_sec"></param>
+        /// <param name="lpm_displayGroup">Display group in the Domain list inside the Linode DNS Manager</param>
+        /// <param name="master_ips">When type=slave, the zone's master DNS servers list, semicolon separated </param>
+        /// <param name="Refresh_sec"></param>
+        /// <param name="Retry_sec"></param>
+        /// <param name="SOA_Email">Required when type=master</param>
+        /// <param name="status">0, 1, or 2 (disabled, active, edit mode)</param>
+        /// <param name="TTL_sec"></param>
+        public async Task Domain_CreateAsync(
+            string Domain,
+            string Type,
+            string axfr_ips = null,
+            string Description = null,
+            int? Expire_sec = null,
+            string lpm_displayGroup = null,
+            string master_ips = null,
+            int? Refresh_sec = null,
+            int? Retry_sec = null,
+            string SOA_Email = null,
+            int? status = null,
+            int? TTL_sec = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("Domain", Domain);
@@ -254,34 +416,58 @@ namespace Austin.Linode
                 myParams.Add("status", status.Value.ToString(CultureInfo.InvariantCulture));
             if (TTL_sec != null)
                 myParams.Add("TTL_sec", TTL_sec.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("domain.create", myParams);
+            await GetResponseAsync<object>("domain.create", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="DomainID"></param>
         public void Domain_Delete(
-                int DomainID)
+            int DomainID)
+        {
+            Task.Run(() => Domain_DeleteAsync(DomainID)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="DomainID"></param>
+        public async Task Domain_DeleteAsync(
+            int DomainID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DomainID", DomainID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("domain.delete", myParams);
+            await GetResponseAsync<object>("domain.delete", myParams);
         }
+
 
         /// <summary>
         /// Lists domains you have access to.
         /// </summary>
         /// <param name="DomainID">Limits the list to the specified DomainID</param>
         public void Domain_List(
-                int? DomainID = null)
+            int? DomainID = null)
+        {
+            Task.Run(() => Domain_ListAsync(DomainID)).Wait();
+        }
+
+        /// <summary>
+        /// Lists domains you have access to.
+        /// </summary>
+        /// <param name="DomainID">Limits the list to the specified DomainID</param>
+        public async Task Domain_ListAsync(
+            int? DomainID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (DomainID != null)
                 myParams.Add("DomainID", DomainID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("domain.list", myParams);
+            await GetResponseAsync<object>("domain.list", myParams);
         }
+
 
         /// <summary>
         /// Create a domain record.
@@ -298,16 +484,45 @@ namespace Austin.Linode
         /// <param name="TTL_sec">TTL.  Leave as 0 to accept our default.</param>
         /// <param name="Weight"></param>
         public void Domain_Resource_Create(
-                int DomainID,
-                string Type,
-                string Name = null,
-                int? Port = null,
-                int? Priority = null,
-                string Protocol = null,
-                string Tag = null,
-                string Target = null,
-                int? TTL_sec = null,
-                int? Weight = null)
+            int DomainID,
+            string Type,
+            string Name = null,
+            int? Port = null,
+            int? Priority = null,
+            string Protocol = null,
+            string Tag = null,
+            string Target = null,
+            int? TTL_sec = null,
+            int? Weight = null)
+        {
+            Task.Run(() => Domain_Resource_CreateAsync(DomainID, Type, Name, Port, Priority, Protocol, Tag, Target, TTL_sec, Weight)).Wait();
+        }
+
+        /// <summary>
+        /// Create a domain record.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOACCESS,VALIDATION</exception>
+        /// <param name="DomainID"></param>
+        /// <param name="Type">One of: NS, MX, A, AAAA, CNAME, TXT, SRV or CAA</param>
+        /// <param name="Name">The hostname or FQDN.  When Type=MX the subdomain to delegate to the Target MX server.</param>
+        /// <param name="Port"></param>
+        /// <param name="Priority">Priority for MX and SRV records, 0-65535</param>
+        /// <param name="Protocol">The protocol to append to an SRV record.  Ignored on other record types.</param>
+        /// <param name="Tag">The tag attribute for a CAA record.  One of issue, issuewild, iodef.  Ignored on other record types.</param>
+        /// <param name="Target">When Type=MX the hostname.  When Type=CNAME the target of the alias.  When Type=TXT or CAA the value of the record. When Type=A or AAAA the token of '[remote_addr]' will be substituted with the IP address of the request.</param>
+        /// <param name="TTL_sec">TTL.  Leave as 0 to accept our default.</param>
+        /// <param name="Weight"></param>
+        public async Task Domain_Resource_CreateAsync(
+            int DomainID,
+            string Type,
+            string Name = null,
+            int? Port = null,
+            int? Priority = null,
+            string Protocol = null,
+            string Tag = null,
+            string Target = null,
+            int? TTL_sec = null,
+            int? Weight = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DomainID", DomainID.ToString(CultureInfo.InvariantCulture));
@@ -328,40 +543,68 @@ namespace Austin.Linode
                 myParams.Add("TTL_sec", TTL_sec.Value.ToString(CultureInfo.InvariantCulture));
             if (Weight != null)
                 myParams.Add("Weight", Weight.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("domain.resource.create", myParams);
+            await GetResponseAsync<object>("domain.resource.create", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="DomainID"></param>
         /// <param name="ResourceID"></param>
         public void Domain_Resource_Delete(
-                int DomainID,
-                int ResourceID)
+            int DomainID,
+            int ResourceID)
+        {
+            Task.Run(() => Domain_Resource_DeleteAsync(DomainID, ResourceID)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="DomainID"></param>
+        /// <param name="ResourceID"></param>
+        public async Task Domain_Resource_DeleteAsync(
+            int DomainID,
+            int ResourceID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DomainID", DomainID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("ResourceID", ResourceID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("domain.resource.delete", myParams);
+            await GetResponseAsync<object>("domain.resource.delete", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="DomainID"></param>
         /// <param name="ResourceID"></param>
         public void Domain_Resource_List(
-                int DomainID,
-                int? ResourceID = null)
+            int DomainID,
+            int? ResourceID = null)
+        {
+            Task.Run(() => Domain_Resource_ListAsync(DomainID, ResourceID)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="DomainID"></param>
+        /// <param name="ResourceID"></param>
+        public async Task Domain_Resource_ListAsync(
+            int DomainID,
+            int? ResourceID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DomainID", DomainID.ToString(CultureInfo.InvariantCulture));
             if (ResourceID != null)
                 myParams.Add("ResourceID", ResourceID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("domain.resource.list", myParams);
+            await GetResponseAsync<object>("domain.resource.list", myParams);
         }
+
 
         /// <summary>
         /// Update a domain record.
@@ -378,16 +621,45 @@ namespace Austin.Linode
         /// <param name="TTL_sec">TTL.  Leave as 0 to accept our default.</param>
         /// <param name="Weight"></param>
         public void Domain_Resource_Update(
-                int ResourceID,
-                int? DomainID = null,
-                string Name = null,
-                int? Port = null,
-                int? Priority = null,
-                string Protocol = null,
-                string Tag = null,
-                string Target = null,
-                int? TTL_sec = null,
-                int? Weight = null)
+            int ResourceID,
+            int? DomainID = null,
+            string Name = null,
+            int? Port = null,
+            int? Priority = null,
+            string Protocol = null,
+            string Tag = null,
+            string Target = null,
+            int? TTL_sec = null,
+            int? Weight = null)
+        {
+            Task.Run(() => Domain_Resource_UpdateAsync(ResourceID, DomainID, Name, Port, Priority, Protocol, Tag, Target, TTL_sec, Weight)).Wait();
+        }
+
+        /// <summary>
+        /// Update a domain record.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="ResourceID"></param>
+        /// <param name="DomainID"></param>
+        /// <param name="Name">The hostname or FQDN.  When Type=MX the subdomain to delegate to the Target MX server.</param>
+        /// <param name="Port"></param>
+        /// <param name="Priority">Priority for MX and SRV records, 0-65535</param>
+        /// <param name="Protocol">The protocol to append to an SRV record.  Ignored on other record types.</param>
+        /// <param name="Tag">The tag attribute for a CAA record.  One of issue, issuewild, iodef.  Ignored on other record types.</param>
+        /// <param name="Target">When Type=MX the hostname.  When Type=CNAME the target of the alias.  When Type=TXT or CAA the value of the record. When Type=A or AAAA the token of '[remote_addr]' will be substituted with the IP address of the request.</param>
+        /// <param name="TTL_sec">TTL.  Leave as 0 to accept our default.</param>
+        /// <param name="Weight"></param>
+        public async Task Domain_Resource_UpdateAsync(
+            int ResourceID,
+            int? DomainID = null,
+            string Name = null,
+            int? Port = null,
+            int? Priority = null,
+            string Protocol = null,
+            string Tag = null,
+            string Target = null,
+            int? TTL_sec = null,
+            int? Weight = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ResourceID", ResourceID.ToString(CultureInfo.InvariantCulture));
@@ -409,8 +681,9 @@ namespace Austin.Linode
                 myParams.Add("TTL_sec", TTL_sec.Value.ToString(CultureInfo.InvariantCulture));
             if (Weight != null)
                 myParams.Add("Weight", Weight.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("domain.resource.update", myParams);
+            await GetResponseAsync<object>("domain.resource.update", myParams);
         }
+
 
         /// <summary>
         /// Update a domain record.
@@ -430,19 +703,54 @@ namespace Austin.Linode
         /// <param name="TTL_sec"></param>
         /// <param name="Type">master or slave</param>
         public void Domain_Update(
-                int DomainID,
-                string axfr_ips = null,
-                string Description = null,
-                string Domain = null,
-                int? Expire_sec = null,
-                string lpm_displayGroup = null,
-                string master_ips = null,
-                int? Refresh_sec = null,
-                int? Retry_sec = null,
-                string SOA_Email = null,
-                int? status = null,
-                int? TTL_sec = null,
-                string Type = null)
+            int DomainID,
+            string axfr_ips = null,
+            string Description = null,
+            string Domain = null,
+            int? Expire_sec = null,
+            string lpm_displayGroup = null,
+            string master_ips = null,
+            int? Refresh_sec = null,
+            int? Retry_sec = null,
+            string SOA_Email = null,
+            int? status = null,
+            int? TTL_sec = null,
+            string Type = null)
+        {
+            Task.Run(() => Domain_UpdateAsync(DomainID, axfr_ips, Description, Domain, Expire_sec, lpm_displayGroup, master_ips, Refresh_sec, Retry_sec, SOA_Email, status, TTL_sec, Type)).Wait();
+        }
+
+        /// <summary>
+        /// Update a domain record.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DomainID"></param>
+        /// <param name="axfr_ips">IP addresses allowed to AXFR the entire zone, semicolon separated</param>
+        /// <param name="Description">Currently undisplayed.</param>
+        /// <param name="Domain">The zone's name</param>
+        /// <param name="Expire_sec"></param>
+        /// <param name="lpm_displayGroup">Display group in the Domain list inside the Linode DNS Manager</param>
+        /// <param name="master_ips">When type=slave, the zone's master DNS servers list, semicolon separated </param>
+        /// <param name="Refresh_sec"></param>
+        /// <param name="Retry_sec"></param>
+        /// <param name="SOA_Email">Required when type=master</param>
+        /// <param name="status">0, 1, or 2 (disabled, active, edit mode)</param>
+        /// <param name="TTL_sec"></param>
+        /// <param name="Type">master or slave</param>
+        public async Task Domain_UpdateAsync(
+            int DomainID,
+            string axfr_ips = null,
+            string Description = null,
+            string Domain = null,
+            int? Expire_sec = null,
+            string lpm_displayGroup = null,
+            string master_ips = null,
+            int? Refresh_sec = null,
+            int? Retry_sec = null,
+            string SOA_Email = null,
+            int? status = null,
+            int? TTL_sec = null,
+            string Type = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DomainID", DomainID.ToString(CultureInfo.InvariantCulture));
@@ -470,8 +778,9 @@ namespace Austin.Linode
                 myParams.Add("TTL_sec", TTL_sec.Value.ToString(CultureInfo.InvariantCulture));
             if (Type != null)
                 myParams.Add("Type", Type);
-            GetResponse<object>("domain.update", myParams);
+            await GetResponseAsync<object>("domain.update", myParams);
         }
+
 
         /// <summary>
         /// Deletes a gold-master image
@@ -479,12 +788,24 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="ImageID">The ID of the gold-master image to delete</param>
         public void Image_Delete(
-                int ImageID)
+            int ImageID)
+        {
+            Task.Run(() => Image_DeleteAsync(ImageID)).Wait();
+        }
+
+        /// <summary>
+        /// Deletes a gold-master image
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="ImageID">The ID of the gold-master image to delete</param>
+        public async Task Image_DeleteAsync(
+            int ImageID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ImageID", ImageID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("image.delete", myParams);
+            await GetResponseAsync<object>("image.delete", myParams);
         }
+
 
         /// <summary>
         /// Lists available gold-master images
@@ -493,16 +814,30 @@ namespace Austin.Linode
         /// <param name="ImageID">Request information for a specific gold-master image</param>
         /// <param name="pending">Show images currently being created.</param>
         public Austin.Linode.ImageResponse[] Image_List(
-                int? ImageID = null,
-                int? pending = null)
+            int? ImageID = null,
+            int? pending = null)
+        {
+            return Task.Run(() => Image_ListAsync(ImageID, pending)).Result;
+        }
+
+        /// <summary>
+        /// Lists available gold-master images
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="ImageID">Request information for a specific gold-master image</param>
+        /// <param name="pending">Show images currently being created.</param>
+        public async Task<Austin.Linode.ImageResponse[]> Image_ListAsync(
+            int? ImageID = null,
+            int? pending = null)
         {
             var myParams = new Dictionary<string, string>();
             if (ImageID != null)
                 myParams.Add("ImageID", ImageID.Value.ToString(CultureInfo.InvariantCulture));
             if (pending != null)
                 myParams.Add("pending", pending.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.ImageResponse[]>("image.list", myParams);
+            return await GetResponseAsync<Austin.Linode.ImageResponse[]>("image.list", myParams);
         }
+
 
         /// <summary>
         /// Update an Image record.
@@ -512,9 +847,24 @@ namespace Austin.Linode
         /// <param name="description">An optional description of the Image.</param>
         /// <param name="label">The label of the Image.</param>
         public void Image_Update(
-                int ImageID,
-                string description = null,
-                string label = null)
+            int ImageID,
+            string description = null,
+            string label = null)
+        {
+            Task.Run(() => Image_UpdateAsync(ImageID, description, label)).Wait();
+        }
+
+        /// <summary>
+        /// Update an Image record.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="ImageID">The ID of the Image to modify.</param>
+        /// <param name="description">An optional description of the Image.</param>
+        /// <param name="label">The label of the Image.</param>
+        public async Task Image_UpdateAsync(
+            int ImageID,
+            string description = null,
+            string label = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ImageID", ImageID.ToString(CultureInfo.InvariantCulture));
@@ -522,8 +872,9 @@ namespace Austin.Linode
                 myParams.Add("description", description);
             if (label != null)
                 myParams.Add("label", label);
-            GetResponse<object>("image.update", myParams);
+            await GetResponseAsync<object>("image.update", myParams);
         }
+
 
         /// <summary>
         /// Issues a boot job for the provided ConfigID.
@@ -535,15 +886,32 @@ namespace Austin.Linode
         /// <param name="LinodeID"></param>
         /// <param name="ConfigID">The ConfigID to boot, available from linode.config.list().</param>
         public Austin.Linode.JobIdResponse Linode_Boot(
-                int LinodeID,
-                int? ConfigID = null)
+            int LinodeID,
+            int? ConfigID = null)
+        {
+            return Task.Run(() => Linode_BootAsync(LinodeID, ConfigID)).Result;
+        }
+
+        /// <summary>
+        /// Issues a boot job for the provided ConfigID.
+        /// </summary>
+        /// <remarks>
+        /// If no ConfigID is provided boots the last used configuration profile, or the first configuration profile if this Linode has never been booted.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="LinodeID"></param>
+        /// <param name="ConfigID">The ConfigID to boot, available from linode.config.list().</param>
+        public async Task<Austin.Linode.JobIdResponse> Linode_BootAsync(
+            int LinodeID,
+            int? ConfigID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             if (ConfigID != null)
                 myParams.Add("ConfigID", ConfigID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.JobIdResponse>("linode.boot", myParams);
+            return await GetResponseAsync<Austin.Linode.JobIdResponse>("linode.boot", myParams);
         }
+
 
         /// <summary>
         /// Creates a new Linode, assigns you full privileges, and then clones the specified LinodeID to the new Linode.
@@ -557,10 +925,30 @@ namespace Austin.Linode
         /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
         /// <param name="PaymentTerm">Subscription term in months for prepaid customers.  One of: 1, 12, or 24</param>
         public Austin.Linode.LinodeIdResponse Linode_Clone(
-                int DatacenterID,
-                int LinodeID,
-                int PlanID,
-                int? PaymentTerm = null)
+            int DatacenterID,
+            int LinodeID,
+            int PlanID,
+            int? PaymentTerm = null)
+        {
+            return Task.Run(() => Linode_CloneAsync(DatacenterID, LinodeID, PlanID, PaymentTerm)).Result;
+        }
+
+        /// <summary>
+        /// Creates a new Linode, assigns you full privileges, and then clones the specified LinodeID to the new Linode.
+        /// </summary>
+        /// <remarks>
+        /// There is a limit of 5 active clone operations per source Linode.  It is recommended that the source Linode be powered down during the clone.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOACCESS,NOTFOUND,CCFAILED,VALIDATION,LINODELIMITER,ACCOUNTLIMIT</exception>
+        /// <param name="DatacenterID">The DatacenterID from avail.datacenters() where you wish to place this new Linode</param>
+        /// <param name="LinodeID">The LinodeID that you want cloned</param>
+        /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
+        /// <param name="PaymentTerm">Subscription term in months for prepaid customers.  One of: 1, 12, or 24</param>
+        public async Task<Austin.Linode.LinodeIdResponse> Linode_CloneAsync(
+            int DatacenterID,
+            int LinodeID,
+            int PlanID,
+            int? PaymentTerm = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DatacenterID", DatacenterID.ToString(CultureInfo.InvariantCulture));
@@ -568,8 +956,9 @@ namespace Austin.Linode
             myParams.Add("PlanID", PlanID.ToString(CultureInfo.InvariantCulture));
             if (PaymentTerm != null)
                 myParams.Add("PaymentTerm", PaymentTerm.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.LinodeIdResponse>("linode.clone", myParams);
+            return await GetResponseAsync<Austin.Linode.LinodeIdResponse>("linode.clone", myParams);
         }
+
 
         /// <summary>
         /// Creates a Linode Configuration Profile.
@@ -593,23 +982,66 @@ namespace Austin.Linode
         /// <param name="RunLevel">One of 'default', 'single', 'binbash' </param>
         /// <param name="virt_mode">Controls the virtualization mode. One of 'paravirt', 'fullvirt' </param>
         public Austin.Linode.ConfigIdResponse Linode_Config_Create(
-                string DiskList,
-                int KernelID,
-                string Label,
-                int LinodeID,
-                string Comments = null,
-                bool? devtmpfs_automount = null,
-                bool? helper_depmod = null,
-                bool? helper_disableUpdateDB = null,
-                bool? helper_distro = null,
-                bool? helper_network = null,
-                bool? helper_xen = null,
-                int? RAMLimit = null,
-                string RootDeviceCustom = null,
-                int? RootDeviceNum = null,
-                bool? RootDeviceRO = null,
-                string RunLevel = null,
-                string virt_mode = null)
+            string DiskList,
+            int KernelID,
+            string Label,
+            int LinodeID,
+            string Comments = null,
+            bool? devtmpfs_automount = null,
+            bool? helper_depmod = null,
+            bool? helper_disableUpdateDB = null,
+            bool? helper_distro = null,
+            bool? helper_network = null,
+            bool? helper_xen = null,
+            int? RAMLimit = null,
+            string RootDeviceCustom = null,
+            int? RootDeviceNum = null,
+            bool? RootDeviceRO = null,
+            string RunLevel = null,
+            string virt_mode = null)
+        {
+            return Task.Run(() => Linode_Config_CreateAsync(DiskList, KernelID, Label, LinodeID, Comments, devtmpfs_automount, helper_depmod, helper_disableUpdateDB, helper_distro, helper_network, helper_xen, RAMLimit, RootDeviceCustom, RootDeviceNum, RootDeviceRO, RunLevel, virt_mode)).Result;
+        }
+
+        /// <summary>
+        /// Creates a Linode Configuration Profile.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DiskList">A comma delimited list of DiskIDs; position reflects device node.  The 9th element for specifying the initrd.</param>
+        /// <param name="KernelID">The KernelID for this profile.  Found in avail.kernels()</param>
+        /// <param name="Label">The Label for this profile</param>
+        /// <param name="LinodeID"></param>
+        /// <param name="Comments">Comments you wish to save along with this profile</param>
+        /// <param name="devtmpfs_automount">Controls if pv_ops kernels should automount devtmpfs at boot. </param>
+        /// <param name="helper_depmod">Creates an empty modprobe file for the kernel you're booting. </param>
+        /// <param name="helper_disableUpdateDB">Enable the disableUpdateDB filesystem helper</param>
+        /// <param name="helper_distro">Enable the Distro filesystem helper.  Corrects fstab and inittab/upstart entries depending on the kernel you're booting.  You want this.</param>
+        /// <param name="helper_network">Automatically creates network configuration files for your distro and places them into your filesystem.</param>
+        /// <param name="helper_xen">Deprecated - use helper_distro.</param>
+        /// <param name="RAMLimit">RAMLimit in MB.  0 for max.</param>
+        /// <param name="RootDeviceCustom">A custom root device setting.</param>
+        /// <param name="RootDeviceNum">Which device number (1-8) that contains the root partition.  0 to utilize RootDeviceCustom.</param>
+        /// <param name="RootDeviceRO">Enables the 'ro' kernel flag.  Modern distros want this. </param>
+        /// <param name="RunLevel">One of 'default', 'single', 'binbash' </param>
+        /// <param name="virt_mode">Controls the virtualization mode. One of 'paravirt', 'fullvirt' </param>
+        public async Task<Austin.Linode.ConfigIdResponse> Linode_Config_CreateAsync(
+            string DiskList,
+            int KernelID,
+            string Label,
+            int LinodeID,
+            string Comments = null,
+            bool? devtmpfs_automount = null,
+            bool? helper_depmod = null,
+            bool? helper_disableUpdateDB = null,
+            bool? helper_distro = null,
+            bool? helper_network = null,
+            bool? helper_xen = null,
+            int? RAMLimit = null,
+            string RootDeviceCustom = null,
+            int? RootDeviceNum = null,
+            bool? RootDeviceRO = null,
+            string RunLevel = null,
+            string virt_mode = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DiskList", DiskList);
@@ -642,8 +1074,9 @@ namespace Austin.Linode
                 myParams.Add("RunLevel", RunLevel);
             if (virt_mode != null)
                 myParams.Add("virt_mode", virt_mode);
-            return GetResponse<Austin.Linode.ConfigIdResponse>("linode.config.create", myParams);
+            return await GetResponseAsync<Austin.Linode.ConfigIdResponse>("linode.config.create", myParams);
         }
+
 
         /// <summary>
         /// Deletes a Linode Configuration Profile.
@@ -652,14 +1085,28 @@ namespace Austin.Linode
         /// <param name="ConfigID"></param>
         /// <param name="LinodeID"></param>
         public Austin.Linode.ConfigIdResponse Linode_Config_Delete(
-                int ConfigID,
-                int LinodeID)
+            int ConfigID,
+            int LinodeID)
+        {
+            return Task.Run(() => Linode_Config_DeleteAsync(ConfigID, LinodeID)).Result;
+        }
+
+        /// <summary>
+        /// Deletes a Linode Configuration Profile.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="ConfigID"></param>
+        /// <param name="LinodeID"></param>
+        public async Task<Austin.Linode.ConfigIdResponse> Linode_Config_DeleteAsync(
+            int ConfigID,
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ConfigID", ConfigID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.ConfigIdResponse>("linode.config.delete", myParams);
+            return await GetResponseAsync<Austin.Linode.ConfigIdResponse>("linode.config.delete", myParams);
         }
+
 
         /// <summary>
         /// Lists a Linode's Configuration Profiles.
@@ -668,15 +1115,29 @@ namespace Austin.Linode
         /// <param name="LinodeID"></param>
         /// <param name="ConfigID"></param>
         public Austin.Linode.ConfigResponse[] Linode_Config_List(
-                int LinodeID,
-                int? ConfigID = null)
+            int LinodeID,
+            int? ConfigID = null)
+        {
+            return Task.Run(() => Linode_Config_ListAsync(LinodeID, ConfigID)).Result;
+        }
+
+        /// <summary>
+        /// Lists a Linode's Configuration Profiles.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="LinodeID"></param>
+        /// <param name="ConfigID"></param>
+        public async Task<Austin.Linode.ConfigResponse[]> Linode_Config_ListAsync(
+            int LinodeID,
+            int? ConfigID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             if (ConfigID != null)
                 myParams.Add("ConfigID", ConfigID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.ConfigResponse[]>("linode.config.list", myParams);
+            return await GetResponseAsync<Austin.Linode.ConfigResponse[]>("linode.config.list", myParams);
         }
+
 
         /// <summary>
         /// Updates a Linode Configuration Profile.
@@ -701,24 +1162,69 @@ namespace Austin.Linode
         /// <param name="RunLevel">One of 'default', 'single', 'binbash' </param>
         /// <param name="virt_mode">Controls the virtualization mode. One of 'paravirt', 'fullvirt' </param>
         public Austin.Linode.ConfigIdResponse Linode_Config_Update(
-                int ConfigID,
-                string Comments = null,
-                bool? devtmpfs_automount = null,
-                string DiskList = null,
-                bool? helper_depmod = null,
-                bool? helper_disableUpdateDB = null,
-                bool? helper_distro = null,
-                bool? helper_network = null,
-                bool? helper_xen = null,
-                int? KernelID = null,
-                string Label = null,
-                int? LinodeID = null,
-                int? RAMLimit = null,
-                string RootDeviceCustom = null,
-                int? RootDeviceNum = null,
-                bool? RootDeviceRO = null,
-                string RunLevel = null,
-                string virt_mode = null)
+            int ConfigID,
+            string Comments = null,
+            bool? devtmpfs_automount = null,
+            string DiskList = null,
+            bool? helper_depmod = null,
+            bool? helper_disableUpdateDB = null,
+            bool? helper_distro = null,
+            bool? helper_network = null,
+            bool? helper_xen = null,
+            int? KernelID = null,
+            string Label = null,
+            int? LinodeID = null,
+            int? RAMLimit = null,
+            string RootDeviceCustom = null,
+            int? RootDeviceNum = null,
+            bool? RootDeviceRO = null,
+            string RunLevel = null,
+            string virt_mode = null)
+        {
+            return Task.Run(() => Linode_Config_UpdateAsync(ConfigID, Comments, devtmpfs_automount, DiskList, helper_depmod, helper_disableUpdateDB, helper_distro, helper_network, helper_xen, KernelID, Label, LinodeID, RAMLimit, RootDeviceCustom, RootDeviceNum, RootDeviceRO, RunLevel, virt_mode)).Result;
+        }
+
+        /// <summary>
+        /// Updates a Linode Configuration Profile.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="ConfigID"></param>
+        /// <param name="Comments">Comments you wish to save along with this profile</param>
+        /// <param name="devtmpfs_automount">Controls if pv_ops kernels should automount devtmpfs at boot. </param>
+        /// <param name="DiskList">A comma delimited list of DiskIDs; position reflects device node.  The 9th element for specifying the initrd.</param>
+        /// <param name="helper_depmod">Creates an empty modprobe file for the kernel you're booting. </param>
+        /// <param name="helper_disableUpdateDB">Enable the disableUpdateDB filesystem helper</param>
+        /// <param name="helper_distro">Enable the Distro filesystem helper.  Corrects fstab and inittab/upstart entries depending on the kernel you're booting.  You want this.</param>
+        /// <param name="helper_network">Automatically creates network configuration files for your distro and places them into your filesystem.</param>
+        /// <param name="helper_xen">Deprecated - use helper_distro.</param>
+        /// <param name="KernelID">The KernelID for this profile.  Found in avail.kernels()</param>
+        /// <param name="Label">The Label for this profile</param>
+        /// <param name="LinodeID"></param>
+        /// <param name="RAMLimit">RAMLimit in MB.  0 for max.</param>
+        /// <param name="RootDeviceCustom">A custom root device setting.</param>
+        /// <param name="RootDeviceNum">Which device number (1-8) that contains the root partition.  0 to utilize RootDeviceCustom.</param>
+        /// <param name="RootDeviceRO">Enables the 'ro' kernel flag.  Modern distros want this. </param>
+        /// <param name="RunLevel">One of 'default', 'single', 'binbash' </param>
+        /// <param name="virt_mode">Controls the virtualization mode. One of 'paravirt', 'fullvirt' </param>
+        public async Task<Austin.Linode.ConfigIdResponse> Linode_Config_UpdateAsync(
+            int ConfigID,
+            string Comments = null,
+            bool? devtmpfs_automount = null,
+            string DiskList = null,
+            bool? helper_depmod = null,
+            bool? helper_disableUpdateDB = null,
+            bool? helper_distro = null,
+            bool? helper_network = null,
+            bool? helper_xen = null,
+            int? KernelID = null,
+            string Label = null,
+            int? LinodeID = null,
+            int? RAMLimit = null,
+            string RootDeviceCustom = null,
+            int? RootDeviceNum = null,
+            bool? RootDeviceRO = null,
+            string RunLevel = null,
+            string virt_mode = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ConfigID", ConfigID.ToString(CultureInfo.InvariantCulture));
@@ -756,8 +1262,9 @@ namespace Austin.Linode
                 myParams.Add("RunLevel", RunLevel);
             if (virt_mode != null)
                 myParams.Add("virt_mode", virt_mode);
-            return GetResponse<Austin.Linode.ConfigIdResponse>("linode.config.update", myParams);
+            return await GetResponseAsync<Austin.Linode.ConfigIdResponse>("linode.config.update", myParams);
         }
+
 
         /// <summary>
         /// Creates a Linode and assigns you full privileges.
@@ -770,17 +1277,36 @@ namespace Austin.Linode
         /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
         /// <param name="PaymentTerm">Subscription term in months for prepaid customers.  One of: 1, 12, or 24</param>
         public Austin.Linode.LinodeIdResponse Linode_Create(
-                int DatacenterID,
-                int PlanID,
-                int? PaymentTerm = null)
+            int DatacenterID,
+            int PlanID,
+            int? PaymentTerm = null)
+        {
+            return Task.Run(() => Linode_CreateAsync(DatacenterID, PlanID, PaymentTerm)).Result;
+        }
+
+        /// <summary>
+        /// Creates a Linode and assigns you full privileges.
+        /// </summary>
+        /// <remarks>
+        /// There is a 250-linodes-per-hour limiter.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOACCESS,CCFAILED,VALIDATION,LINODELIMITER,ACCOUNTLIMIT</exception>
+        /// <param name="DatacenterID">The DatacenterID from avail.datacenters() where you wish to place this new Linode</param>
+        /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
+        /// <param name="PaymentTerm">Subscription term in months for prepaid customers.  One of: 1, 12, or 24</param>
+        public async Task<Austin.Linode.LinodeIdResponse> Linode_CreateAsync(
+            int DatacenterID,
+            int PlanID,
+            int? PaymentTerm = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DatacenterID", DatacenterID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("PlanID", PlanID.ToString(CultureInfo.InvariantCulture));
             if (PaymentTerm != null)
                 myParams.Add("PaymentTerm", PaymentTerm.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.LinodeIdResponse>("linode.create", myParams);
+            return await GetResponseAsync<Austin.Linode.LinodeIdResponse>("linode.create", myParams);
         }
+
 
         /// <summary>
         /// Immediately removes a Linode from your account and issues a pro-rated credit back to your account, if applicable.
@@ -792,18 +1318,35 @@ namespace Austin.Linode
         /// <param name="LinodeID">The LinodeID to delete</param>
         /// <param name="skipChecks">Skips the safety checks and will always delete the Linode</param>
         public Austin.Linode.LinodeIdResponse Linode_Delete(
-                int LinodeID,
-                bool? skipChecks = null)
+            int LinodeID,
+            bool? skipChecks = null)
+        {
+            return Task.Run(() => Linode_DeleteAsync(LinodeID, skipChecks)).Result;
+        }
+
+        /// <summary>
+        /// Immediately removes a Linode from your account and issues a pro-rated credit back to your account, if applicable.
+        /// </summary>
+        /// <remarks>
+        /// To prevent accidental deletes, this requires the Linode has no Disk images.  You must first delete its disk images."
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,LINODENOTEMPTY</exception>
+        /// <param name="LinodeID">The LinodeID to delete</param>
+        /// <param name="skipChecks">Skips the safety checks and will always delete the Linode</param>
+        public async Task<Austin.Linode.LinodeIdResponse> Linode_DeleteAsync(
+            int LinodeID,
+            bool? skipChecks = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             if (skipChecks != null)
                 myParams.Add("skipChecks", skipChecks.Value ? "true" : "false");
-            return GetResponse<Austin.Linode.LinodeIdResponse>("linode.delete", myParams);
+            return await GetResponseAsync<Austin.Linode.LinodeIdResponse>("linode.delete", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="Label">The display label for this Disk</param>
@@ -812,11 +1355,30 @@ namespace Austin.Linode
         /// <param name="Type">The formatted type of this disk.  Valid types are: ext3, ext4, swap, raw</param>
         /// <param name="isReadOnly">Enable forced read-only for this Disk</param>
         public Austin.Linode.DiskIdResponse Linode_Disk_Create(
-                string Label,
-                int LinodeID,
-                int Size,
-                string Type,
-                bool? isReadOnly = null)
+            string Label,
+            int LinodeID,
+            int Size,
+            string Type,
+            bool? isReadOnly = null)
+        {
+            return Task.Run(() => Linode_Disk_CreateAsync(Label, LinodeID, Size, Type, isReadOnly)).Result;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="Label">The display label for this Disk</param>
+        /// <param name="LinodeID"></param>
+        /// <param name="Size">The size in MB of this Disk.</param>
+        /// <param name="Type">The formatted type of this disk.  Valid types are: ext3, ext4, swap, raw</param>
+        /// <param name="isReadOnly">Enable forced read-only for this Disk</param>
+        public async Task<Austin.Linode.DiskIdResponse> Linode_Disk_CreateAsync(
+            string Label,
+            int LinodeID,
+            int Size,
+            string Type,
+            bool? isReadOnly = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("Label", Label);
@@ -825,11 +1387,12 @@ namespace Austin.Linode
             myParams.Add("Type", Type);
             if (isReadOnly != null)
                 myParams.Add("isReadOnly", isReadOnly.Value ? "true" : "false");
-            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.create", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskIdResponse>("linode.disk.create", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="DistributionID">The DistributionID to create this disk from.  Found in avail.distributions()</param>
@@ -839,12 +1402,33 @@ namespace Austin.Linode
         /// <param name="Size">Size of this disk image in MB</param>
         /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys (or /home/core/.ssh/authorized_keys) upon distribution configuration.</param>
         public Austin.Linode.DiskIdResponse Linode_Disk_CreateFromDistribution(
-                int DistributionID,
-                string Label,
-                int LinodeID,
-                string rootPass,
-                int Size,
-                string rootSSHKey = null)
+            int DistributionID,
+            string Label,
+            int LinodeID,
+            string rootPass,
+            int Size,
+            string rootSSHKey = null)
+        {
+            return Task.Run(() => Linode_Disk_CreateFromDistributionAsync(DistributionID, Label, LinodeID, rootPass, Size, rootSSHKey)).Result;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DistributionID">The DistributionID to create this disk from.  Found in avail.distributions()</param>
+        /// <param name="Label">The label of this new disk image</param>
+        /// <param name="LinodeID"></param>
+        /// <param name="rootPass">The root (or core) user's password</param>
+        /// <param name="Size">Size of this disk image in MB</param>
+        /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys (or /home/core/.ssh/authorized_keys) upon distribution configuration.</param>
+        public async Task<Austin.Linode.DiskIdResponse> Linode_Disk_CreateFromDistributionAsync(
+            int DistributionID,
+            string Label,
+            int LinodeID,
+            string rootPass,
+            int Size,
+            string rootSSHKey = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DistributionID", DistributionID.ToString(CultureInfo.InvariantCulture));
@@ -854,8 +1438,9 @@ namespace Austin.Linode
             myParams.Add("Size", Size.ToString(CultureInfo.InvariantCulture));
             if (rootSSHKey != null)
                 myParams.Add("rootSSHKey", rootSSHKey);
-            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.createfromdistribution", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskIdResponse>("linode.disk.createfromdistribution", myParams);
         }
+
 
         /// <summary>
         /// Creates a new disk from a previously imagized disk.
@@ -867,12 +1452,32 @@ namespace Austin.Linode
         /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys upon image deployment</param>
         /// <param name="size">The size of the disk image to creates. Defaults to the minimum size required for the requested image</param>
         public Austin.Linode.DiskIdResponse Linode_Disk_CreateFromImage(
-                int ImageID,
-                int LinodeID,
-                string Label = null,
-                string rootPass = null,
-                string rootSSHKey = null,
-                int? size = null)
+            int ImageID,
+            int LinodeID,
+            string Label = null,
+            string rootPass = null,
+            string rootSSHKey = null,
+            int? size = null)
+        {
+            return Task.Run(() => Linode_Disk_CreateFromImageAsync(ImageID, LinodeID, Label, rootPass, rootSSHKey, size)).Result;
+        }
+
+        /// <summary>
+        /// Creates a new disk from a previously imagized disk.
+        /// </summary>
+        /// <param name="ImageID">The ID of the frozen image to deploy from</param>
+        /// <param name="LinodeID">Specifies the Linode to deploy on to</param>
+        /// <param name="Label">The label of this new disk image</param>
+        /// <param name="rootPass">Optionally sets the root password at deployment time. If a password is not provided the existing root password of the frozen image will not be modified</param>
+        /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys upon image deployment</param>
+        /// <param name="size">The size of the disk image to creates. Defaults to the minimum size required for the requested image</param>
+        public async Task<Austin.Linode.DiskIdResponse> Linode_Disk_CreateFromImageAsync(
+            int ImageID,
+            int LinodeID,
+            string Label = null,
+            string rootPass = null,
+            string rootSSHKey = null,
+            int? size = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ImageID", ImageID.ToString(CultureInfo.InvariantCulture));
@@ -885,11 +1490,12 @@ namespace Austin.Linode
                 myParams.Add("rootSSHKey", rootSSHKey);
             if (size != null)
                 myParams.Add("size", size.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.createfromimage", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskIdResponse>("linode.disk.createfromimage", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="DistributionID">Which Distribution to apply this StackScript to.  Must be one from the script's DistributionIDList</param>
@@ -901,14 +1507,39 @@ namespace Austin.Linode
         /// <param name="StackScriptUDFResponses">JSON encoded name/value pairs, answering this StackScript's User Defined Fields</param>
         /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys upon distribution configuration.</param>
         public Austin.Linode.DiskIdResponse Linode_Disk_CreateFromStackScript(
-                int DistributionID,
-                string Label,
-                int LinodeID,
-                string rootPass,
-                int Size,
-                int StackScriptID,
-                string StackScriptUDFResponses,
-                string rootSSHKey = null)
+            int DistributionID,
+            string Label,
+            int LinodeID,
+            string rootPass,
+            int Size,
+            int StackScriptID,
+            string StackScriptUDFResponses,
+            string rootSSHKey = null)
+        {
+            return Task.Run(() => Linode_Disk_CreateFromStackScriptAsync(DistributionID, Label, LinodeID, rootPass, Size, StackScriptID, StackScriptUDFResponses, rootSSHKey)).Result;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DistributionID">Which Distribution to apply this StackScript to.  Must be one from the script's DistributionIDList</param>
+        /// <param name="Label">The label of this new disk image</param>
+        /// <param name="LinodeID"></param>
+        /// <param name="rootPass">The root user's password</param>
+        /// <param name="Size">Size of this disk image in MB</param>
+        /// <param name="StackScriptID">The StackScript to create this image from</param>
+        /// <param name="StackScriptUDFResponses">JSON encoded name/value pairs, answering this StackScript's User Defined Fields</param>
+        /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys upon distribution configuration.</param>
+        public async Task<Austin.Linode.DiskIdResponse> Linode_Disk_CreateFromStackScriptAsync(
+            int DistributionID,
+            string Label,
+            int LinodeID,
+            string rootPass,
+            int Size,
+            int StackScriptID,
+            string StackScriptUDFResponses,
+            string rootSSHKey = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DistributionID", DistributionID.ToString(CultureInfo.InvariantCulture));
@@ -920,24 +1551,39 @@ namespace Austin.Linode
             myParams.Add("StackScriptUDFResponses", StackScriptUDFResponses);
             if (rootSSHKey != null)
                 myParams.Add("rootSSHKey", rootSSHKey);
-            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.createfromstackscript", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskIdResponse>("linode.disk.createfromstackscript", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="DiskID"></param>
         /// <param name="LinodeID"></param>
         public Austin.Linode.DiskIdResponse Linode_Disk_Delete(
-                int DiskID,
-                int LinodeID)
+            int DiskID,
+            int LinodeID)
+        {
+            return Task.Run(() => Linode_Disk_DeleteAsync(DiskID, LinodeID)).Result;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DiskID"></param>
+        /// <param name="LinodeID"></param>
+        public async Task<Austin.Linode.DiskIdResponse> Linode_Disk_DeleteAsync(
+            int DiskID,
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DiskID", DiskID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.delete", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskIdResponse>("linode.disk.delete", myParams);
         }
+
 
         /// <summary>
         /// Performs a bit-for-bit copy of a disk image.
@@ -946,14 +1592,28 @@ namespace Austin.Linode
         /// <param name="DiskID"></param>
         /// <param name="LinodeID"></param>
         public Austin.Linode.DiskIdResponse Linode_Disk_Duplicate(
-                int DiskID,
-                int LinodeID)
+            int DiskID,
+            int LinodeID)
+        {
+            return Task.Run(() => Linode_Disk_DuplicateAsync(DiskID, LinodeID)).Result;
+        }
+
+        /// <summary>
+        /// Performs a bit-for-bit copy of a disk image.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DiskID"></param>
+        /// <param name="LinodeID"></param>
+        public async Task<Austin.Linode.DiskIdResponse> Linode_Disk_DuplicateAsync(
+            int DiskID,
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DiskID", DiskID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.duplicate", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskIdResponse>("linode.disk.duplicate", myParams);
         }
+
 
         /// <summary>
         /// Creates a gold-master image for future deployments
@@ -963,10 +1623,26 @@ namespace Austin.Linode
         /// <param name="Description">An optional description of the created image</param>
         /// <param name="Label">Sets the name of the image shown in the base image list, defaults to the source image label</param>
         public Austin.Linode.ImageIdResponse Linode_Disk_Imagize(
-                int DiskID,
-                int LinodeID,
-                string Description = null,
-                string Label = null)
+            int DiskID,
+            int LinodeID,
+            string Description = null,
+            string Label = null)
+        {
+            return Task.Run(() => Linode_Disk_ImagizeAsync(DiskID, LinodeID, Description, Label)).Result;
+        }
+
+        /// <summary>
+        /// Creates a gold-master image for future deployments
+        /// </summary>
+        /// <param name="DiskID">Specifies the source Disk to create the image from</param>
+        /// <param name="LinodeID">Specifies the source Linode to create the image from</param>
+        /// <param name="Description">An optional description of the created image</param>
+        /// <param name="Label">Sets the name of the image shown in the base image list, defaults to the source image label</param>
+        public async Task<Austin.Linode.ImageIdResponse> Linode_Disk_ImagizeAsync(
+            int DiskID,
+            int LinodeID,
+            string Description = null,
+            string Label = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DiskID", DiskID.ToString(CultureInfo.InvariantCulture));
@@ -975,8 +1651,9 @@ namespace Austin.Linode
                 myParams.Add("Description", Description);
             if (Label != null)
                 myParams.Add("Label", Label);
-            return GetResponse<Austin.Linode.ImageIdResponse>("linode.disk.imagize", myParams);
+            return await GetResponseAsync<Austin.Linode.ImageIdResponse>("linode.disk.imagize", myParams);
         }
+
 
         /// <summary>
         /// Status values are 1: Ready and 2: Being Deleted.
@@ -984,37 +1661,66 @@ namespace Austin.Linode
         /// <param name="LinodeID"></param>
         /// <param name="DiskID"></param>
         public Austin.Linode.DiskResponse[] Linode_Disk_List(
-                int LinodeID,
-                int? DiskID = null)
+            int LinodeID,
+            int? DiskID = null)
+        {
+            return Task.Run(() => Linode_Disk_ListAsync(LinodeID, DiskID)).Result;
+        }
+
+        /// <summary>
+        /// Status values are 1: Ready and 2: Being Deleted.
+        /// </summary>
+        /// <param name="LinodeID"></param>
+        /// <param name="DiskID"></param>
+        public async Task<Austin.Linode.DiskResponse[]> Linode_Disk_ListAsync(
+            int LinodeID,
+            int? DiskID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             if (DiskID != null)
                 myParams.Add("DiskID", DiskID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.DiskResponse[]>("linode.disk.list", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskResponse[]>("linode.disk.list", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="DiskID"></param>
         /// <param name="LinodeID"></param>
         /// <param name="size">The requested new size of this Disk in MB</param>
         public Austin.Linode.DiskIdResponse Linode_Disk_Resize(
-                int DiskID,
-                int LinodeID,
-                int size)
+            int DiskID,
+            int LinodeID,
+            int size)
+        {
+            return Task.Run(() => Linode_Disk_ResizeAsync(DiskID, LinodeID, size)).Result;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DiskID"></param>
+        /// <param name="LinodeID"></param>
+        /// <param name="size">The requested new size of this Disk in MB</param>
+        public async Task<Austin.Linode.DiskIdResponse> Linode_Disk_ResizeAsync(
+            int DiskID,
+            int LinodeID,
+            int size)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DiskID", DiskID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("size", size.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.DiskIdResponse>("linode.disk.resize", myParams);
+            return await GetResponseAsync<Austin.Linode.DiskIdResponse>("linode.disk.resize", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="DiskID"></param>
@@ -1022,10 +1728,27 @@ namespace Austin.Linode
         /// <param name="Label">The display label for this Disk</param>
         /// <param name="LinodeID"></param>
         public void Linode_Disk_Update(
-                int DiskID,
-                bool? isReadOnly = null,
-                string Label = null,
-                int? LinodeID = null)
+            int DiskID,
+            bool? isReadOnly = null,
+            string Label = null,
+            int? LinodeID = null)
+        {
+            Task.Run(() => Linode_Disk_UpdateAsync(DiskID, isReadOnly, Label, LinodeID)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="DiskID"></param>
+        /// <param name="isReadOnly">Enable forced read-only for this Disk</param>
+        /// <param name="Label">The display label for this Disk</param>
+        /// <param name="LinodeID"></param>
+        public async Task Linode_Disk_UpdateAsync(
+            int DiskID,
+            bool? isReadOnly = null,
+            string Label = null,
+            int? LinodeID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DiskID", DiskID.ToString(CultureInfo.InvariantCulture));
@@ -1035,8 +1758,9 @@ namespace Austin.Linode
                 myParams.Add("Label", Label);
             if (LinodeID != null)
                 myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.disk.update", myParams);
+            await GetResponseAsync<object>("linode.disk.update", myParams);
         }
+
 
         /// <summary>
         /// Assigns a Private IP to a Linode.
@@ -1047,12 +1771,27 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="LinodeID"></param>
         public Austin.Linode.IpAddressResponse Linode_Ip_AddPrivate(
-                int LinodeID)
+            int LinodeID)
+        {
+            return Task.Run(() => Linode_Ip_AddPrivateAsync(LinodeID)).Result;
+        }
+
+        /// <summary>
+        /// Assigns a Private IP to a Linode.
+        /// </summary>
+        /// <remarks>
+        /// Returns the IPAddressID that was added.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="LinodeID"></param>
+        public async Task<Austin.Linode.IpAddressResponse> Linode_Ip_AddPrivateAsync(
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.IpAddressResponse>("linode.ip.addprivate", myParams);
+            return await GetResponseAsync<Austin.Linode.IpAddressResponse>("linode.ip.addprivate", myParams);
         }
+
 
         /// <summary>
         /// Assigns a Public IP to a Linode.
@@ -1063,12 +1802,27 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="LinodeID">The LinodeID of the Linode that will be assigned an additional public IP address</param>
         public Austin.Linode.IpAddressResponse Linode_Ip_AddPublic(
-                int LinodeID)
+            int LinodeID)
+        {
+            return Task.Run(() => Linode_Ip_AddPublicAsync(LinodeID)).Result;
+        }
+
+        /// <summary>
+        /// Assigns a Public IP to a Linode.
+        /// </summary>
+        /// <remarks>
+        /// Returns the IPAddressID and IPAddress that was added.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="LinodeID">The LinodeID of the Linode that will be assigned an additional public IP address</param>
+        public async Task<Austin.Linode.IpAddressResponse> Linode_Ip_AddPublicAsync(
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.IpAddressResponse>("linode.ip.addpublic", myParams);
+            return await GetResponseAsync<Austin.Linode.IpAddressResponse>("linode.ip.addpublic", myParams);
         }
+
 
         /// <summary>
         /// Returns the IP addresses of all Linodes you have access to.
@@ -1077,16 +1831,30 @@ namespace Austin.Linode
         /// <param name="IPAddressID">If specified, limits the result to this IPAddressID</param>
         /// <param name="LinodeID">If specified, limits the result to this LinodeID</param>
         public Austin.Linode.IpAddressListEntry[] Linode_Ip_List(
-                int? IPAddressID = null,
-                int? LinodeID = null)
+            int? IPAddressID = null,
+            int? LinodeID = null)
+        {
+            return Task.Run(() => Linode_Ip_ListAsync(IPAddressID, LinodeID)).Result;
+        }
+
+        /// <summary>
+        /// Returns the IP addresses of all Linodes you have access to.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="IPAddressID">If specified, limits the result to this IPAddressID</param>
+        /// <param name="LinodeID">If specified, limits the result to this LinodeID</param>
+        public async Task<Austin.Linode.IpAddressListEntry[]> Linode_Ip_ListAsync(
+            int? IPAddressID = null,
+            int? LinodeID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (IPAddressID != null)
                 myParams.Add("IPAddressID", IPAddressID.Value.ToString(CultureInfo.InvariantCulture));
             if (LinodeID != null)
                 myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.IpAddressListEntry[]>("linode.ip.list", myParams);
+            return await GetResponseAsync<Austin.Linode.IpAddressListEntry[]>("linode.ip.list", myParams);
         }
+
 
         /// <summary>
         /// Sets the rDNS name of a Public IP.
@@ -1098,14 +1866,31 @@ namespace Austin.Linode
         /// <param name="Hostname">The hostname to set the reverse DNS to</param>
         /// <param name="IPAddressID">The IPAddressID of the address to update</param>
         public void Linode_Ip_SetRDns(
-                string Hostname,
-                int IPAddressID)
+            string Hostname,
+            int IPAddressID)
+        {
+            Task.Run(() => Linode_Ip_SetRDnsAsync(Hostname, IPAddressID)).Wait();
+        }
+
+        /// <summary>
+        /// Sets the rDNS name of a Public IP.
+        /// </summary>
+        /// <remarks>
+        /// Returns the IPAddressID and IPAddress that were updated.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="Hostname">The hostname to set the reverse DNS to</param>
+        /// <param name="IPAddressID">The IPAddressID of the address to update</param>
+        public async Task Linode_Ip_SetRDnsAsync(
+            string Hostname,
+            int IPAddressID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("Hostname", Hostname);
             myParams.Add("IPAddressID", IPAddressID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.ip.setrdns", myParams);
+            await GetResponseAsync<object>("linode.ip.setrdns", myParams);
         }
+
 
         /// <summary>
         /// Exchanges Public IP addresses between two Linodes within a Datacenter.
@@ -1118,9 +1903,27 @@ namespace Austin.Linode
         /// <param name="toLinodeID">The LinodeID of the Linode where IPAddressID will be transfered</param>
         /// <param name="withIPAddressID">The IP Address ID to swap</param>
         public void Linode_Ip_Swap(
-                int IPAddressID,
-                int? toLinodeID = null,
-                int? withIPAddressID = null)
+            int IPAddressID,
+            int? toLinodeID = null,
+            int? withIPAddressID = null)
+        {
+            Task.Run(() => Linode_Ip_SwapAsync(IPAddressID, toLinodeID, withIPAddressID)).Wait();
+        }
+
+        /// <summary>
+        /// Exchanges Public IP addresses between two Linodes within a Datacenter.
+        /// </summary>
+        /// <remarks>
+        /// The destination of the IP Address can be designated by either the toLinodeID or withIPAddressID parameter.  Returns the resulting relationship of the Linode and IP Address parameters.  When performing a one directional swap, the source is represented by the first of the two resultant array members.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="IPAddressID">The IPAddressID of an IP Address to transfer or swap</param>
+        /// <param name="toLinodeID">The LinodeID of the Linode where IPAddressID will be transfered</param>
+        /// <param name="withIPAddressID">The IP Address ID to swap</param>
+        public async Task Linode_Ip_SwapAsync(
+            int IPAddressID,
+            int? toLinodeID = null,
+            int? withIPAddressID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("IPAddressID", IPAddressID.ToString(CultureInfo.InvariantCulture));
@@ -1128,19 +1931,34 @@ namespace Austin.Linode
                 myParams.Add("toLinodeID", toLinodeID.Value.ToString(CultureInfo.InvariantCulture));
             if (withIPAddressID != null)
                 myParams.Add("withIPAddressID", withIPAddressID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.ip.swap", myParams);
+            await GetResponseAsync<object>("linode.ip.swap", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="LinodeID"></param>
         /// <param name="JobID">Limits the list to the specified JobID</param>
         /// <param name="pendingOnly"></param>
         public Austin.Linode.Job[] Linode_Job_List(
-                int LinodeID,
-                int? JobID = null,
-                bool? pendingOnly = null)
+            int LinodeID,
+            int? JobID = null,
+            bool? pendingOnly = null)
+        {
+            return Task.Run(() => Linode_Job_ListAsync(LinodeID, JobID, pendingOnly)).Result;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="LinodeID"></param>
+        /// <param name="JobID">Limits the list to the specified JobID</param>
+        /// <param name="pendingOnly"></param>
+        public async Task<Austin.Linode.Job[]> Linode_Job_ListAsync(
+            int LinodeID,
+            int? JobID = null,
+            bool? pendingOnly = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
@@ -1148,8 +1966,9 @@ namespace Austin.Linode
                 myParams.Add("JobID", JobID.Value.ToString(CultureInfo.InvariantCulture));
             if (pendingOnly != null)
                 myParams.Add("pendingOnly", pendingOnly.Value ? "true" : "false");
-            return GetResponse<Austin.Linode.Job[]>("linode.job.list", myParams);
+            return await GetResponseAsync<Austin.Linode.Job[]>("linode.job.list", myParams);
         }
+
 
         /// <summary>
         /// Changes a Linode's hypervisor from Xen to KVM.
@@ -1157,12 +1976,24 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="LinodeID">The LinodeID to migrate to KVM.</param>
         public void Linode_Kvmify(
-                int LinodeID)
+            int LinodeID)
+        {
+            Task.Run(() => Linode_KvmifyAsync(LinodeID)).Wait();
+        }
+
+        /// <summary>
+        /// Changes a Linode's hypervisor from Xen to KVM.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="LinodeID">The LinodeID to migrate to KVM.</param>
+        public async Task Linode_KvmifyAsync(
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.kvmify", myParams);
+            await GetResponseAsync<object>("linode.kvmify", myParams);
         }
+
 
         /// <summary>
         /// Returns a list of all Linodes user has access or delete to, including some properties.
@@ -1172,13 +2003,27 @@ namespace Austin.Linode
         /// </remarks>
         /// <param name="LinodeID">Limits the list to the specified LinodeID</param>
         public Austin.Linode.Node[] Linode_List(
-                int? LinodeID = null)
+            int? LinodeID = null)
+        {
+            return Task.Run(() => Linode_ListAsync(LinodeID)).Result;
+        }
+
+        /// <summary>
+        /// Returns a list of all Linodes user has access or delete to, including some properties.
+        /// </summary>
+        /// <remarks>
+        /// Status values are -1: Being Created, 0: Brand New, 1: Running, and 2: Powered Off.
+        /// </remarks>
+        /// <param name="LinodeID">Limits the list to the specified LinodeID</param>
+        public async Task<Austin.Linode.Node[]> Linode_ListAsync(
+            int? LinodeID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (LinodeID != null)
                 myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.Node[]>("linode.list", myParams);
+            return await GetResponseAsync<Austin.Linode.Node[]>("linode.list", myParams);
         }
+
 
         /// <summary>
         /// Upgrades a Linode to its next generation.
@@ -1186,12 +2031,24 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="LinodeID"></param>
         public void Linode_Mutate(
-                int LinodeID)
+            int LinodeID)
+        {
+            Task.Run(() => Linode_MutateAsync(LinodeID)).Wait();
+        }
+
+        /// <summary>
+        /// Upgrades a Linode to its next generation.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="LinodeID"></param>
+        public async Task Linode_MutateAsync(
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.mutate", myParams);
+            await GetResponseAsync<object>("linode.mutate", myParams);
         }
+
 
         /// <summary>
         /// Issues a shutdown, and then boot job for a given LinodeID.
@@ -1200,15 +2057,29 @@ namespace Austin.Linode
         /// <param name="LinodeID"></param>
         /// <param name="ConfigID"></param>
         public Austin.Linode.JobIdResponse Linode_Reboot(
-                int LinodeID,
-                int? ConfigID = null)
+            int LinodeID,
+            int? ConfigID = null)
+        {
+            return Task.Run(() => Linode_RebootAsync(LinodeID, ConfigID)).Result;
+        }
+
+        /// <summary>
+        /// Issues a shutdown, and then boot job for a given LinodeID.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="LinodeID"></param>
+        /// <param name="ConfigID"></param>
+        public async Task<Austin.Linode.JobIdResponse> Linode_RebootAsync(
+            int LinodeID,
+            int? ConfigID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             if (ConfigID != null)
                 myParams.Add("ConfigID", ConfigID.Value.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.JobIdResponse>("linode.reboot", myParams);
+            return await GetResponseAsync<Austin.Linode.JobIdResponse>("linode.reboot", myParams);
         }
+
 
         /// <summary>
         /// Resizes a Linode from one plan to another.
@@ -1220,14 +2091,31 @@ namespace Austin.Linode
         /// <param name="LinodeID"></param>
         /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
         public void Linode_Resize(
-                int LinodeID,
-                int PlanID)
+            int LinodeID,
+            int PlanID)
+        {
+            Task.Run(() => Linode_ResizeAsync(LinodeID, PlanID)).Wait();
+        }
+
+        /// <summary>
+        /// Resizes a Linode from one plan to another.
+        /// </summary>
+        /// <remarks>
+        /// Immediately shuts the Linode down, charges/credits the account, and issue a migration to another host server.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,CCFAILED,VALIDATION</exception>
+        /// <param name="LinodeID"></param>
+        /// <param name="PlanID">The desired PlanID available from avail.LinodePlans()</param>
+        public async Task Linode_ResizeAsync(
+            int LinodeID,
+            int PlanID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("PlanID", PlanID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.resize", myParams);
+            await GetResponseAsync<object>("linode.resize", myParams);
         }
+
 
         /// <summary>
         /// Issues a shutdown job for a given LinodeID.
@@ -1235,12 +2123,24 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="LinodeID"></param>
         public Austin.Linode.JobIdResponse Linode_Shutdown(
-                int LinodeID)
+            int LinodeID)
+        {
+            return Task.Run(() => Linode_ShutdownAsync(LinodeID)).Result;
+        }
+
+        /// <summary>
+        /// Issues a shutdown job for a given LinodeID.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="LinodeID"></param>
+        public async Task<Austin.Linode.JobIdResponse> Linode_ShutdownAsync(
+            int LinodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            return GetResponse<Austin.Linode.JobIdResponse>("linode.shutdown", myParams);
+            return await GetResponseAsync<Austin.Linode.JobIdResponse>("linode.shutdown", myParams);
         }
+
 
         /// <summary>
         /// Updates a Linode's properties.
@@ -1267,26 +2167,75 @@ namespace Austin.Linode
         /// <param name="ms_ssh_user"></param>
         /// <param name="watchdog">Enable the Lassie shutdown watchdog</param>
         public Austin.Linode.LinodeIdResponse Linode_Update(
-                int LinodeID,
-                bool? Alert_bwin_enabled = null,
-                int? Alert_bwin_threshold = null,
-                bool? Alert_bwout_enabled = null,
-                int? Alert_bwout_threshold = null,
-                bool? Alert_bwquota_enabled = null,
-                int? Alert_bwquota_threshold = null,
-                bool? Alert_cpu_enabled = null,
-                int? Alert_cpu_threshold = null,
-                bool? Alert_diskio_enabled = null,
-                int? Alert_diskio_threshold = null,
-                int? backupWeeklyDay = null,
-                int? backupWindow = null,
-                string Label = null,
-                string lpm_displayGroup = null,
-                bool? ms_ssh_disabled = null,
-                string ms_ssh_ip = null,
-                int? ms_ssh_port = null,
-                string ms_ssh_user = null,
-                bool? watchdog = null)
+            int LinodeID,
+            bool? Alert_bwin_enabled = null,
+            int? Alert_bwin_threshold = null,
+            bool? Alert_bwout_enabled = null,
+            int? Alert_bwout_threshold = null,
+            bool? Alert_bwquota_enabled = null,
+            int? Alert_bwquota_threshold = null,
+            bool? Alert_cpu_enabled = null,
+            int? Alert_cpu_threshold = null,
+            bool? Alert_diskio_enabled = null,
+            int? Alert_diskio_threshold = null,
+            int? backupWeeklyDay = null,
+            int? backupWindow = null,
+            string Label = null,
+            string lpm_displayGroup = null,
+            bool? ms_ssh_disabled = null,
+            string ms_ssh_ip = null,
+            int? ms_ssh_port = null,
+            string ms_ssh_user = null,
+            bool? watchdog = null)
+        {
+            return Task.Run(() => Linode_UpdateAsync(LinodeID, Alert_bwin_enabled, Alert_bwin_threshold, Alert_bwout_enabled, Alert_bwout_threshold, Alert_bwquota_enabled, Alert_bwquota_threshold, Alert_cpu_enabled, Alert_cpu_threshold, Alert_diskio_enabled, Alert_diskio_threshold, backupWeeklyDay, backupWindow, Label, lpm_displayGroup, ms_ssh_disabled, ms_ssh_ip, ms_ssh_port, ms_ssh_user, watchdog)).Result;
+        }
+
+        /// <summary>
+        /// Updates a Linode's properties.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="LinodeID"></param>
+        /// <param name="Alert_bwin_enabled">Enable the incoming bandwidth email alert</param>
+        /// <param name="Alert_bwin_threshold">Mb/sec</param>
+        /// <param name="Alert_bwout_enabled">Enable the outgoing bandwidth email alert</param>
+        /// <param name="Alert_bwout_threshold">Mb/sec</param>
+        /// <param name="Alert_bwquota_enabled">Enable the bw quote email alert</param>
+        /// <param name="Alert_bwquota_threshold">Percentage of monthly bw quota</param>
+        /// <param name="Alert_cpu_enabled">Enable the cpu usage email alert</param>
+        /// <param name="Alert_cpu_threshold">CPU Alert threshold, percentage 0-800</param>
+        /// <param name="Alert_diskio_enabled">Enable the disk IO email alert</param>
+        /// <param name="Alert_diskio_threshold">IO ops/sec</param>
+        /// <param name="backupWeeklyDay"></param>
+        /// <param name="backupWindow"></param>
+        /// <param name="Label">This Linode's label</param>
+        /// <param name="lpm_displayGroup">Display group in the Linode list inside the Linode Manager</param>
+        /// <param name="ms_ssh_disabled"></param>
+        /// <param name="ms_ssh_ip"></param>
+        /// <param name="ms_ssh_port"></param>
+        /// <param name="ms_ssh_user"></param>
+        /// <param name="watchdog">Enable the Lassie shutdown watchdog</param>
+        public async Task<Austin.Linode.LinodeIdResponse> Linode_UpdateAsync(
+            int LinodeID,
+            bool? Alert_bwin_enabled = null,
+            int? Alert_bwin_threshold = null,
+            bool? Alert_bwout_enabled = null,
+            int? Alert_bwout_threshold = null,
+            bool? Alert_bwquota_enabled = null,
+            int? Alert_bwquota_threshold = null,
+            bool? Alert_cpu_enabled = null,
+            int? Alert_cpu_threshold = null,
+            bool? Alert_diskio_enabled = null,
+            int? Alert_diskio_threshold = null,
+            int? backupWeeklyDay = null,
+            int? backupWindow = null,
+            string Label = null,
+            string lpm_displayGroup = null,
+            bool? ms_ssh_disabled = null,
+            string ms_ssh_ip = null,
+            int? ms_ssh_port = null,
+            string ms_ssh_user = null,
+            bool? watchdog = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
@@ -1328,8 +2277,9 @@ namespace Austin.Linode
                 myParams.Add("ms_ssh_user", ms_ssh_user);
             if (watchdog != null)
                 myParams.Add("watchdog", watchdog.Value ? "true" : "false");
-            return GetResponse<Austin.Linode.LinodeIdResponse>("linode.update", myParams);
+            return await GetResponseAsync<Austin.Linode.LinodeIdResponse>("linode.update", myParams);
         }
+
 
         /// <summary>
         /// Generates a console token starting a web console LISH session for the requesting IP
@@ -1337,15 +2287,27 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="LinodeID"></param>
         public void Linode_WebConsoleToken(
-                int LinodeID)
+            int LinodeID)
         {
-            var myParams = new Dictionary<string, string>();
-            myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("linode.webconsoletoken", myParams);
+            Task.Run(() => Linode_WebConsoleTokenAsync(LinodeID)).Wait();
         }
 
         /// <summary>
-        /// 
+        /// Generates a console token starting a web console LISH session for the requesting IP
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="LinodeID"></param>
+        public async Task Linode_WebConsoleTokenAsync(
+            int LinodeID)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("LinodeID", LinodeID.ToString(CultureInfo.InvariantCulture));
+            await GetResponseAsync<object>("linode.webconsoletoken", myParams);
+        }
+
+
+        /// <summary>
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="NodeBalancerID">The parent NodeBalancer's ID</param>
@@ -1364,21 +2326,60 @@ namespace Austin.Linode
         /// <param name="ssl_key">Unpassphrased private key for the SSL certificate when protocol is 'https'</param>
         /// <param name="Stickiness">Session persistence.  One of 'none', 'table', 'http_cookie'</param>
         public void NodeBalancer_Config_Create(
-                int NodeBalancerID,
-                string Algorithm = null,
-                string check = null,
-                string check_attempts = null,
-                string check_body = null,
-                int? check_interval = null,
-                bool? check_passive = null,
-                string check_path = null,
-                string check_timeout = null,
-                string cipher_suite = null,
-                int? Port = null,
-                string Protocol = null,
-                string ssl_cert = null,
-                string ssl_key = null,
-                string Stickiness = null)
+            int NodeBalancerID,
+            string Algorithm = null,
+            string check = null,
+            string check_attempts = null,
+            string check_body = null,
+            int? check_interval = null,
+            bool? check_passive = null,
+            string check_path = null,
+            string check_timeout = null,
+            string cipher_suite = null,
+            int? Port = null,
+            string Protocol = null,
+            string ssl_cert = null,
+            string ssl_key = null,
+            string Stickiness = null)
+        {
+            Task.Run(() => NodeBalancer_Config_CreateAsync(NodeBalancerID, Algorithm, check, check_attempts, check_body, check_interval, check_passive, check_path, check_timeout, cipher_suite, Port, Protocol, ssl_cert, ssl_key, Stickiness)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="NodeBalancerID">The parent NodeBalancer's ID</param>
+        /// <param name="Algorithm">Balancing algorithm.  One of 'roundrobin', 'leastconn', 'source'</param>
+        /// <param name="check">Perform active health checks on the backend nodes.  One of 'connection', 'http', 'http_body'</param>
+        /// <param name="check_attempts">Number of failed probes before taking a node out of rotation. 1-30</param>
+        /// <param name="check_body">When check=http, a regex to match within the first 16,384 bytes of the response body</param>
+        /// <param name="check_interval">Seconds between health check probes.  2-3600</param>
+        /// <param name="check_passive">Enable passive checks based on observing communication with back-end nodes.</param>
+        /// <param name="check_path">When check=http, the path to request</param>
+        /// <param name="check_timeout">Seconds to wait before considering the probe a failure. 1-30.  Must be less than check_interval.</param>
+        /// <param name="cipher_suite">SSL cipher suite to enforce. One of 'recommended', 'legacy'</param>
+        /// <param name="Port">Port to bind to on the public interfaces. 1-65534</param>
+        /// <param name="Protocol">Either 'tcp', 'http', or 'https'</param>
+        /// <param name="ssl_cert">SSL certificate served by the NodeBalancer when the protocol is 'https'</param>
+        /// <param name="ssl_key">Unpassphrased private key for the SSL certificate when protocol is 'https'</param>
+        /// <param name="Stickiness">Session persistence.  One of 'none', 'table', 'http_cookie'</param>
+        public async Task NodeBalancer_Config_CreateAsync(
+            int NodeBalancerID,
+            string Algorithm = null,
+            string check = null,
+            string check_attempts = null,
+            string check_body = null,
+            int? check_interval = null,
+            bool? check_passive = null,
+            string check_path = null,
+            string check_timeout = null,
+            string cipher_suite = null,
+            int? Port = null,
+            string Protocol = null,
+            string ssl_cert = null,
+            string ssl_key = null,
+            string Stickiness = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("NodeBalancerID", NodeBalancerID.ToString(CultureInfo.InvariantCulture));
@@ -1410,8 +2411,9 @@ namespace Austin.Linode
                 myParams.Add("ssl_key", ssl_key);
             if (Stickiness != null)
                 myParams.Add("Stickiness", Stickiness);
-            GetResponse<object>("nodebalancer.config.create", myParams);
+            await GetResponseAsync<object>("nodebalancer.config.create", myParams);
         }
+
 
         /// <summary>
         /// Deletes a NodeBalancer's Config
@@ -1420,14 +2422,28 @@ namespace Austin.Linode
         /// <param name="ConfigID">The ConfigID to delete</param>
         /// <param name="NodeBalancerID"></param>
         public void NodeBalancer_Config_Delete(
-                int ConfigID,
-                int NodeBalancerID)
+            int ConfigID,
+            int NodeBalancerID)
+        {
+            Task.Run(() => NodeBalancer_Config_DeleteAsync(ConfigID, NodeBalancerID)).Wait();
+        }
+
+        /// <summary>
+        /// Deletes a NodeBalancer's Config
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="ConfigID">The ConfigID to delete</param>
+        /// <param name="NodeBalancerID"></param>
+        public async Task NodeBalancer_Config_DeleteAsync(
+            int ConfigID,
+            int NodeBalancerID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ConfigID", ConfigID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("NodeBalancerID", NodeBalancerID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.config.delete", myParams);
+            await GetResponseAsync<object>("nodebalancer.config.delete", myParams);
         }
+
 
         /// <summary>
         /// Returns a list of NodeBalancers this user has access or delete to, including their properties
@@ -1435,15 +2451,28 @@ namespace Austin.Linode
         /// <param name="NodeBalancerID"></param>
         /// <param name="ConfigID">Limits the list to the specified ConfigID</param>
         public void NodeBalancer_Config_List(
-                int NodeBalancerID,
-                int? ConfigID = null)
+            int NodeBalancerID,
+            int? ConfigID = null)
+        {
+            Task.Run(() => NodeBalancer_Config_ListAsync(NodeBalancerID, ConfigID)).Wait();
+        }
+
+        /// <summary>
+        /// Returns a list of NodeBalancers this user has access or delete to, including their properties
+        /// </summary>
+        /// <param name="NodeBalancerID"></param>
+        /// <param name="ConfigID">Limits the list to the specified ConfigID</param>
+        public async Task NodeBalancer_Config_ListAsync(
+            int NodeBalancerID,
+            int? ConfigID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("NodeBalancerID", NodeBalancerID.ToString(CultureInfo.InvariantCulture));
             if (ConfigID != null)
                 myParams.Add("ConfigID", ConfigID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.config.list", myParams);
+            await GetResponseAsync<object>("nodebalancer.config.list", myParams);
         }
+
 
         /// <summary>
         /// Updates a Config's properties
@@ -1465,21 +2494,60 @@ namespace Austin.Linode
         /// <param name="ssl_key">Unpassphrased private key for the SSL certificate when protocol is 'https'</param>
         /// <param name="Stickiness">Session persistence.  One of 'none', 'table', 'http_cookie'</param>
         public void NodeBalancer_Config_Update(
-                int ConfigID,
-                string Algorithm = null,
-                string check = null,
-                string check_attempts = null,
-                string check_body = null,
-                int? check_interval = null,
-                bool? check_passive = null,
-                string check_path = null,
-                string check_timeout = null,
-                string cipher_suite = null,
-                int? Port = null,
-                string Protocol = null,
-                string ssl_cert = null,
-                string ssl_key = null,
-                string Stickiness = null)
+            int ConfigID,
+            string Algorithm = null,
+            string check = null,
+            string check_attempts = null,
+            string check_body = null,
+            int? check_interval = null,
+            bool? check_passive = null,
+            string check_path = null,
+            string check_timeout = null,
+            string cipher_suite = null,
+            int? Port = null,
+            string Protocol = null,
+            string ssl_cert = null,
+            string ssl_key = null,
+            string Stickiness = null)
+        {
+            Task.Run(() => NodeBalancer_Config_UpdateAsync(ConfigID, Algorithm, check, check_attempts, check_body, check_interval, check_passive, check_path, check_timeout, cipher_suite, Port, Protocol, ssl_cert, ssl_key, Stickiness)).Wait();
+        }
+
+        /// <summary>
+        /// Updates a Config's properties
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="ConfigID"></param>
+        /// <param name="Algorithm">Balancing algorithm.  One of 'roundrobin', 'leastconn', 'source'</param>
+        /// <param name="check">Perform active health checks on the backend nodes.  One of 'connection', 'http', 'http_body'</param>
+        /// <param name="check_attempts">Number of failed probes before taking a node out of rotation. 1-30</param>
+        /// <param name="check_body">When check=http, a regex to match within the first 16,384 bytes of the response body</param>
+        /// <param name="check_interval">Seconds between health check probes.  2-3600</param>
+        /// <param name="check_passive">Enable passive checks based on observing communication with back-end nodes.</param>
+        /// <param name="check_path">When check=http, the path to request</param>
+        /// <param name="check_timeout">Seconds to wait before considering the probe a failure. 1-30.  Must be less than check_interval.</param>
+        /// <param name="cipher_suite">SSL cipher suite to enforce. One of 'recommended', 'legacy'</param>
+        /// <param name="Port">Port to bind to on the public interfaces. 1-65534</param>
+        /// <param name="Protocol">Either 'tcp', 'http', or 'https'</param>
+        /// <param name="ssl_cert">SSL certificate served by the NodeBalancer when the protocol is 'https'</param>
+        /// <param name="ssl_key">Unpassphrased private key for the SSL certificate when protocol is 'https'</param>
+        /// <param name="Stickiness">Session persistence.  One of 'none', 'table', 'http_cookie'</param>
+        public async Task NodeBalancer_Config_UpdateAsync(
+            int ConfigID,
+            string Algorithm = null,
+            string check = null,
+            string check_attempts = null,
+            string check_body = null,
+            int? check_interval = null,
+            bool? check_passive = null,
+            string check_path = null,
+            string check_timeout = null,
+            string cipher_suite = null,
+            int? Port = null,
+            string Protocol = null,
+            string ssl_cert = null,
+            string ssl_key = null,
+            string Stickiness = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ConfigID", ConfigID.ToString(CultureInfo.InvariantCulture));
@@ -1511,20 +2579,36 @@ namespace Austin.Linode
                 myParams.Add("ssl_key", ssl_key);
             if (Stickiness != null)
                 myParams.Add("Stickiness", Stickiness);
-            GetResponse<object>("nodebalancer.config.update", myParams);
+            await GetResponseAsync<object>("nodebalancer.config.update", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOACCESS,CCFAILED,VALIDATION</exception>
         /// <param name="DatacenterID">The DatacenterID from avail.datacenters() where you wish to place this new NodeBalancer</param>
         /// <param name="ClientConnThrottle">To help mitigate abuse, throttle connections per second, per client IP. 0 to disable. Max of 20.</param>
         /// <param name="Label">This NodeBalancer's label</param>
         public void NodeBalancer_Create(
-                int DatacenterID,
-                int? ClientConnThrottle = null,
-                string Label = null)
+            int DatacenterID,
+            int? ClientConnThrottle = null,
+            string Label = null)
+        {
+            Task.Run(() => NodeBalancer_CreateAsync(DatacenterID, ClientConnThrottle, Label)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOACCESS,CCFAILED,VALIDATION</exception>
+        /// <param name="DatacenterID">The DatacenterID from avail.datacenters() where you wish to place this new NodeBalancer</param>
+        /// <param name="ClientConnThrottle">To help mitigate abuse, throttle connections per second, per client IP. 0 to disable. Max of 20.</param>
+        /// <param name="Label">This NodeBalancer's label</param>
+        public async Task NodeBalancer_CreateAsync(
+            int DatacenterID,
+            int? ClientConnThrottle = null,
+            string Label = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DatacenterID", DatacenterID.ToString(CultureInfo.InvariantCulture));
@@ -1532,8 +2616,9 @@ namespace Austin.Linode
                 myParams.Add("ClientConnThrottle", ClientConnThrottle.Value.ToString(CultureInfo.InvariantCulture));
             if (Label != null)
                 myParams.Add("Label", Label);
-            GetResponse<object>("nodebalancer.create", myParams);
+            await GetResponseAsync<object>("nodebalancer.create", myParams);
         }
+
 
         /// <summary>
         /// Immediately removes a NodeBalancer from your account and issues a pro-rated credit back to your account, if applicable.
@@ -1541,28 +2626,51 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="NodeBalancerID">The NodeBalancerID to delete</param>
         public void NodeBalancer_Delete(
-                int NodeBalancerID)
+            int NodeBalancerID)
+        {
+            Task.Run(() => NodeBalancer_DeleteAsync(NodeBalancerID)).Wait();
+        }
+
+        /// <summary>
+        /// Immediately removes a NodeBalancer from your account and issues a pro-rated credit back to your account, if applicable.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="NodeBalancerID">The NodeBalancerID to delete</param>
+        public async Task NodeBalancer_DeleteAsync(
+            int NodeBalancerID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("NodeBalancerID", NodeBalancerID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.delete", myParams);
+            await GetResponseAsync<object>("nodebalancer.delete", myParams);
         }
+
 
         /// <summary>
         /// Returns a list of NodeBalancers this user has access or delete to, including their properties
         /// </summary>
         /// <param name="NodeBalancerID">Limits the list to the specified NodeBalancerID</param>
         public void NodeBalancer_List(
-                int? NodeBalancerID = null)
+            int? NodeBalancerID = null)
+        {
+            Task.Run(() => NodeBalancer_ListAsync(NodeBalancerID)).Wait();
+        }
+
+        /// <summary>
+        /// Returns a list of NodeBalancers this user has access or delete to, including their properties
+        /// </summary>
+        /// <param name="NodeBalancerID">Limits the list to the specified NodeBalancerID</param>
+        public async Task NodeBalancer_ListAsync(
+            int? NodeBalancerID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (NodeBalancerID != null)
                 myParams.Add("NodeBalancerID", NodeBalancerID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.list", myParams);
+            await GetResponseAsync<object>("nodebalancer.list", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
         /// <param name="Address">The address:port combination used to communicate with this Node</param>
@@ -1571,11 +2679,30 @@ namespace Austin.Linode
         /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', 'backup', or 'drain'</param>
         /// <param name="Weight">Load balancing weight, 1-255. Higher means more connections.</param>
         public void NodeBalancer_Node_Create(
-                string Address,
-                int ConfigID,
-                string Label,
-                string Mode = null,
-                int? Weight = null)
+            string Address,
+            int ConfigID,
+            string Label,
+            string Mode = null,
+            int? Weight = null)
+        {
+            Task.Run(() => NodeBalancer_Node_CreateAsync(Address, ConfigID, Label, Mode, Weight)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="Address">The address:port combination used to communicate with this Node</param>
+        /// <param name="ConfigID">The parent ConfigID to attach this Node to</param>
+        /// <param name="Label">This backend Node's label</param>
+        /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', 'backup', or 'drain'</param>
+        /// <param name="Weight">Load balancing weight, 1-255. Higher means more connections.</param>
+        public async Task NodeBalancer_Node_CreateAsync(
+            string Address,
+            int ConfigID,
+            string Label,
+            string Mode = null,
+            int? Weight = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("Address", Address);
@@ -1585,8 +2712,9 @@ namespace Austin.Linode
                 myParams.Add("Mode", Mode);
             if (Weight != null)
                 myParams.Add("Weight", Weight.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.node.create", myParams);
+            await GetResponseAsync<object>("nodebalancer.node.create", myParams);
         }
+
 
         /// <summary>
         /// Deletes a Node from a NodeBalancer Config
@@ -1594,12 +2722,24 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="NodeID">The NodeID to delete</param>
         public void NodeBalancer_Node_Delete(
-                int NodeID)
+            int NodeID)
+        {
+            Task.Run(() => NodeBalancer_Node_DeleteAsync(NodeID)).Wait();
+        }
+
+        /// <summary>
+        /// Deletes a Node from a NodeBalancer Config
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="NodeID">The NodeID to delete</param>
+        public async Task NodeBalancer_Node_DeleteAsync(
+            int NodeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("NodeID", NodeID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.node.delete", myParams);
+            await GetResponseAsync<object>("nodebalancer.node.delete", myParams);
         }
+
 
         /// <summary>
         /// Returns a list of Nodes associated with a NodeBalancer Config
@@ -1607,15 +2747,28 @@ namespace Austin.Linode
         /// <param name="ConfigID"></param>
         /// <param name="NodeID">Limits the list to the specified NodeID</param>
         public void NodeBalancer_Node_List(
-                int ConfigID,
-                int? NodeID = null)
+            int ConfigID,
+            int? NodeID = null)
+        {
+            Task.Run(() => NodeBalancer_Node_ListAsync(ConfigID, NodeID)).Wait();
+        }
+
+        /// <summary>
+        /// Returns a list of Nodes associated with a NodeBalancer Config
+        /// </summary>
+        /// <param name="ConfigID"></param>
+        /// <param name="NodeID">Limits the list to the specified NodeID</param>
+        public async Task NodeBalancer_Node_ListAsync(
+            int ConfigID,
+            int? NodeID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("ConfigID", ConfigID.ToString(CultureInfo.InvariantCulture));
             if (NodeID != null)
                 myParams.Add("NodeID", NodeID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.node.list", myParams);
+            await GetResponseAsync<object>("nodebalancer.node.list", myParams);
         }
+
 
         /// <summary>
         /// Updates a Node's properties
@@ -1627,11 +2780,30 @@ namespace Austin.Linode
         /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', 'backup', or 'drain'</param>
         /// <param name="Weight">Load balancing weight, 1-255. Higher means more connections.</param>
         public void NodeBalancer_Node_Update(
-                int NodeID,
-                string Address = null,
-                string Label = null,
-                string Mode = null,
-                int? Weight = null)
+            int NodeID,
+            string Address = null,
+            string Label = null,
+            string Mode = null,
+            int? Weight = null)
+        {
+            Task.Run(() => NodeBalancer_Node_UpdateAsync(NodeID, Address, Label, Mode, Weight)).Wait();
+        }
+
+        /// <summary>
+        /// Updates a Node's properties
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="NodeID"></param>
+        /// <param name="Address">The address:port combination used to communicate with this Node</param>
+        /// <param name="Label">This backend Node's label</param>
+        /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', 'backup', or 'drain'</param>
+        /// <param name="Weight">Load balancing weight, 1-255. Higher means more connections.</param>
+        public async Task NodeBalancer_Node_UpdateAsync(
+            int NodeID,
+            string Address = null,
+            string Label = null,
+            string Mode = null,
+            int? Weight = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("NodeID", NodeID.ToString(CultureInfo.InvariantCulture));
@@ -1643,8 +2815,9 @@ namespace Austin.Linode
                 myParams.Add("Mode", Mode);
             if (Weight != null)
                 myParams.Add("Weight", Weight.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("nodebalancer.node.update", myParams);
+            await GetResponseAsync<object>("nodebalancer.node.update", myParams);
         }
+
 
         /// <summary>
         /// Updates a NodeBalancer's properties
@@ -1654,9 +2827,24 @@ namespace Austin.Linode
         /// <param name="ClientConnThrottle">To help mitigate abuse, throttle connections per second, per client IP. 0 to disable. Max of 20.</param>
         /// <param name="Label">This NodeBalancer's label</param>
         public void NodeBalancer_Update(
-                int NodeBalancerID,
-                int? ClientConnThrottle = null,
-                string Label = null)
+            int NodeBalancerID,
+            int? ClientConnThrottle = null,
+            string Label = null)
+        {
+            Task.Run(() => NodeBalancer_UpdateAsync(NodeBalancerID, ClientConnThrottle, Label)).Wait();
+        }
+
+        /// <summary>
+        /// Updates a NodeBalancer's properties
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="NodeBalancerID"></param>
+        /// <param name="ClientConnThrottle">To help mitigate abuse, throttle connections per second, per client IP. 0 to disable. Max of 20.</param>
+        /// <param name="Label">This NodeBalancer's label</param>
+        public async Task NodeBalancer_UpdateAsync(
+            int NodeBalancerID,
+            int? ClientConnThrottle = null,
+            string Label = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("NodeBalancerID", NodeBalancerID.ToString(CultureInfo.InvariantCulture));
@@ -1664,8 +2852,9 @@ namespace Austin.Linode
                 myParams.Add("ClientConnThrottle", ClientConnThrottle.Value.ToString(CultureInfo.InvariantCulture));
             if (Label != null)
                 myParams.Add("Label", Label);
-            GetResponse<object>("nodebalancer.update", myParams);
+            await GetResponseAsync<object>("nodebalancer.update", myParams);
         }
+
 
         /// <summary>
         /// Create a StackScript.
@@ -1678,12 +2867,33 @@ namespace Austin.Linode
         /// <param name="isPublic">Whether this StackScript is published in the Library, for everyone to use</param>
         /// <param name="rev_note"></param>
         public void StackScript_Create(
-                string DistributionIDList,
-                string Label,
-                string script,
-                string Description = null,
-                bool? isPublic = null,
-                string rev_note = null)
+            string DistributionIDList,
+            string Label,
+            string script,
+            string Description = null,
+            bool? isPublic = null,
+            string rev_note = null)
+        {
+            Task.Run(() => StackScript_CreateAsync(DistributionIDList, Label, script, Description, isPublic, rev_note)).Wait();
+        }
+
+        /// <summary>
+        /// Create a StackScript.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOACCESS,VALIDATION,STACKSCRIPTLIMIT</exception>
+        /// <param name="DistributionIDList">Comma delimited list of DistributionIDs that this script works on </param>
+        /// <param name="Label">The Label for this StackScript</param>
+        /// <param name="script">The actual script</param>
+        /// <param name="Description"></param>
+        /// <param name="isPublic">Whether this StackScript is published in the Library, for everyone to use</param>
+        /// <param name="rev_note"></param>
+        public async Task StackScript_CreateAsync(
+            string DistributionIDList,
+            string Label,
+            string script,
+            string Description = null,
+            bool? isPublic = null,
+            string rev_note = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("DistributionIDList", DistributionIDList);
@@ -1695,21 +2905,34 @@ namespace Austin.Linode
                 myParams.Add("isPublic", isPublic.Value ? "true" : "false");
             if (rev_note != null)
                 myParams.Add("rev_note", rev_note);
-            GetResponse<object>("stackscript.create", myParams);
+            await GetResponseAsync<object>("stackscript.create", myParams);
         }
 
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="StackScriptID"></param>
         public void StackScript_Delete(
-                int StackScriptID)
+            int StackScriptID)
+        {
+            Task.Run(() => StackScript_DeleteAsync(StackScriptID)).Wait();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="StackScriptID"></param>
+        public async Task StackScript_DeleteAsync(
+            int StackScriptID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("StackScriptID", StackScriptID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("stackscript.delete", myParams);
+            await GetResponseAsync<object>("stackscript.delete", myParams);
         }
+
 
         /// <summary>
         /// Lists StackScripts you have access to.
@@ -1717,13 +2940,25 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: STACKSCRIPTLIMIT</exception>
         /// <param name="StackScriptID">Limits the list to the specified StackScriptID</param>
         public void StackScript_List(
-                int? StackScriptID = null)
+            int? StackScriptID = null)
+        {
+            Task.Run(() => StackScript_ListAsync(StackScriptID)).Wait();
+        }
+
+        /// <summary>
+        /// Lists StackScripts you have access to.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: STACKSCRIPTLIMIT</exception>
+        /// <param name="StackScriptID">Limits the list to the specified StackScriptID</param>
+        public async Task StackScript_ListAsync(
+            int? StackScriptID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (StackScriptID != null)
                 myParams.Add("StackScriptID", StackScriptID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("stackscript.list", myParams);
+            await GetResponseAsync<object>("stackscript.list", myParams);
         }
+
 
         /// <summary>
         /// Update a StackScript.
@@ -1737,13 +2972,36 @@ namespace Austin.Linode
         /// <param name="rev_note"></param>
         /// <param name="script">The actual script</param>
         public void StackScript_Update(
-                int StackScriptID,
-                string Description = null,
-                string DistributionIDList = null,
-                bool? isPublic = null,
-                string Label = null,
-                string rev_note = null,
-                string script = null)
+            int StackScriptID,
+            string Description = null,
+            string DistributionIDList = null,
+            bool? isPublic = null,
+            string Label = null,
+            string rev_note = null,
+            string script = null)
+        {
+            Task.Run(() => StackScript_UpdateAsync(StackScriptID, Description, DistributionIDList, isPublic, Label, rev_note, script)).Wait();
+        }
+
+        /// <summary>
+        /// Update a StackScript.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION</exception>
+        /// <param name="StackScriptID"></param>
+        /// <param name="Description"></param>
+        /// <param name="DistributionIDList">Comma delimited list of DistributionIDs that this script works on </param>
+        /// <param name="isPublic">Whether this StackScript is published in the Library, for everyone to use</param>
+        /// <param name="Label">The Label for this StackScript</param>
+        /// <param name="rev_note"></param>
+        /// <param name="script">The actual script</param>
+        public async Task StackScript_UpdateAsync(
+            int StackScriptID,
+            string Description = null,
+            string DistributionIDList = null,
+            bool? isPublic = null,
+            string Label = null,
+            string rev_note = null,
+            string script = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("StackScriptID", StackScriptID.ToString(CultureInfo.InvariantCulture));
@@ -1759,17 +3017,28 @@ namespace Austin.Linode
                 myParams.Add("rev_note", rev_note);
             if (script != null)
                 myParams.Add("script", script);
-            GetResponse<object>("stackscript.update", myParams);
+            await GetResponseAsync<object>("stackscript.update", myParams);
         }
+
 
         /// <summary>
         /// Echos back parameters that were passed in.
         /// </summary>
         public void Test_Echo(
-        )
+)
         {
-            GetResponse<object>("test.echo", null);
+            Task.Run(() => Test_EchoAsync()).Wait();
         }
+
+        /// <summary>
+        /// Echos back parameters that were passed in.
+        /// </summary>
+        public async Task Test_EchoAsync(
+)
+        {
+            await GetResponseAsync<object>("test.echo", null);
+        }
+
 
         /// <summary>
         /// Authenticates a Linode Manager user against their username, password, and two-factor token (when enabled), and then returns a new API key, which can be used until it expires.
@@ -1784,11 +3053,33 @@ namespace Austin.Linode
         /// <param name="label">An optional label for this key.</param>
         /// <param name="token">Required when two-factor authentication is enabled. Emergency scratch codes are not permitted.</param>
         public Austin.Linode.ApiKey User_GetApiKey(
-                string password,
-                string username,
-                int? expires = null,
-                string label = null,
-                string token = null)
+            string password,
+            string username,
+            int? expires = null,
+            string label = null,
+            string token = null)
+        {
+            return Task.Run(() => User_GetApiKeyAsync(password, username, expires, label, token)).Result;
+        }
+
+        /// <summary>
+        /// Authenticates a Linode Manager user against their username, password, and two-factor token (when enabled), and then returns a new API key, which can be used until it expires.
+        /// </summary>
+        /// <remarks>
+        /// The number of active keys is limited to 20.  Batch requests will be rejected if they include this API action.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: AUTHFAIL,NEEDTOKEN,PASSWORDEXPIRED,KEYLIMIT,TOTPEXPIRED,NOACCESS</exception>
+        /// <param name="password"></param>
+        /// <param name="username"></param>
+        /// <param name="expires">Number of hours the key will remain valid, between 0 and 8760. 0 means no expiration. Defaults to 168.</param>
+        /// <param name="label">An optional label for this key.</param>
+        /// <param name="token">Required when two-factor authentication is enabled. Emergency scratch codes are not permitted.</param>
+        public async Task<Austin.Linode.ApiKey> User_GetApiKeyAsync(
+            string password,
+            string username,
+            int? expires = null,
+            string label = null,
+            string token = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("password", password);
@@ -1799,8 +3090,9 @@ namespace Austin.Linode
                 myParams.Add("label", label);
             if (token != null)
                 myParams.Add("token", token);
-            return GetResponse<Austin.Linode.ApiKey>("user.getapikey", myParams, needsAuth: false);
+            return await GetResponseAsync<Austin.Linode.ApiKey>("user.getapikey", myParams, needsAuth: false);
         }
+
 
         /// <summary>
         /// Clones an existing Block Storage Volume.
@@ -1809,14 +3101,28 @@ namespace Austin.Linode
         /// <param name="CloneFromID"></param>
         /// <param name="Label">A unique name for the new Volume</param>
         public void Volume_Clone(
-                int CloneFromID,
-                string Label)
+            int CloneFromID,
+            string Label)
+        {
+            Task.Run(() => Volume_CloneAsync(CloneFromID, Label)).Wait();
+        }
+
+        /// <summary>
+        /// Clones an existing Block Storage Volume.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOACCESS, VALIDATION, VOLUMEBUSY, VOLUMELIMIT</exception>
+        /// <param name="CloneFromID"></param>
+        /// <param name="Label">A unique name for the new Volume</param>
+        public async Task Volume_CloneAsync(
+            int CloneFromID,
+            string Label)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("CloneFromID", CloneFromID.ToString(CultureInfo.InvariantCulture));
             myParams.Add("Label", Label);
-            GetResponse<object>("volume.clone", myParams);
+            await GetResponseAsync<object>("volume.clone", myParams);
         }
+
 
         /// <summary>
         /// Creates a new Block Storage Volume.
@@ -1830,10 +3136,30 @@ namespace Austin.Linode
         /// <param name="DatacenterID">Sets the datacenter where the Volume should be provisioned</param>
         /// <param name="LinodeID">The Linode to attach this Volume to</param>
         public void Volume_Create(
-                string Label,
-                int Size,
-                int? DatacenterID = null,
-                int? LinodeID = null)
+            string Label,
+            int Size,
+            int? DatacenterID = null,
+            int? LinodeID = null)
+        {
+            Task.Run(() => Volume_CreateAsync(Label, Size, DatacenterID, LinodeID)).Wait();
+        }
+
+        /// <summary>
+        /// Creates a new Block Storage Volume.
+        /// </summary>
+        /// <remarks>
+        /// One of DatacenterID or LinodeID is required.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOACCESS, VALIDATION, ACCOUNTLIMIT, VOLUMELIMIT</exception>
+        /// <param name="Label">A unique name for the Volume</param>
+        /// <param name="Size">Sets the size of the new Volume in GiB</param>
+        /// <param name="DatacenterID">Sets the datacenter where the Volume should be provisioned</param>
+        /// <param name="LinodeID">The Linode to attach this Volume to</param>
+        public async Task Volume_CreateAsync(
+            string Label,
+            int Size,
+            int? DatacenterID = null,
+            int? LinodeID = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("Label", Label);
@@ -1842,8 +3168,9 @@ namespace Austin.Linode
                 myParams.Add("DatacenterID", DatacenterID.Value.ToString(CultureInfo.InvariantCulture));
             if (LinodeID != null)
                 myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("volume.create", myParams);
+            await GetResponseAsync<object>("volume.create", myParams);
         }
+
 
         /// <summary>
         /// Deletes a Block Storage Volume
@@ -1851,25 +3178,48 @@ namespace Austin.Linode
         /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
         /// <param name="VolumeID">The Volume to delete</param>
         public void Volume_Delete(
-                int VolumeID)
+            int VolumeID)
+        {
+            Task.Run(() => Volume_DeleteAsync(VolumeID)).Wait();
+        }
+
+        /// <summary>
+        /// Deletes a Block Storage Volume
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="VolumeID">The Volume to delete</param>
+        public async Task Volume_DeleteAsync(
+            int VolumeID)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("VolumeID", VolumeID.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("volume.delete", myParams);
+            await GetResponseAsync<object>("volume.delete", myParams);
         }
+
 
         /// <summary>
         /// Returns a list of block storage Volumes
         /// </summary>
         /// <param name="VolumeID">Limits the list to the specified Volume</param>
         public void Volume_List(
-                int? VolumeID = null)
+            int? VolumeID = null)
+        {
+            Task.Run(() => Volume_ListAsync(VolumeID)).Wait();
+        }
+
+        /// <summary>
+        /// Returns a list of block storage Volumes
+        /// </summary>
+        /// <param name="VolumeID">Limits the list to the specified Volume</param>
+        public async Task Volume_ListAsync(
+            int? VolumeID = null)
         {
             var myParams = new Dictionary<string, string>();
             if (VolumeID != null)
                 myParams.Add("VolumeID", VolumeID.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("volume.list", myParams);
+            await GetResponseAsync<object>("volume.list", myParams);
         }
+
 
         /// <summary>
         /// Updates a Volume's properties
@@ -1880,10 +3230,27 @@ namespace Austin.Linode
         /// <param name="LinodeID">The Linode to attach this Volume to</param>
         /// <param name="Size">Sets the new size of the new Volume in GiB; Volumes can only be made larger</param>
         public void Volume_Update(
-                int VolumeID,
-                string Label = null,
-                int? LinodeID = null,
-                int? Size = null)
+            int VolumeID,
+            string Label = null,
+            int? LinodeID = null,
+            int? Size = null)
+        {
+            Task.Run(() => Volume_UpdateAsync(VolumeID, Label, LinodeID, Size)).Wait();
+        }
+
+        /// <summary>
+        /// Updates a Volume's properties
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION,VOLUMEBUSY,VOLUMELIMIT</exception>
+        /// <param name="VolumeID">The Volume to modify</param>
+        /// <param name="Label">A unique name for the Volume</param>
+        /// <param name="LinodeID">The Linode to attach this Volume to</param>
+        /// <param name="Size">Sets the new size of the new Volume in GiB; Volumes can only be made larger</param>
+        public async Task Volume_UpdateAsync(
+            int VolumeID,
+            string Label = null,
+            int? LinodeID = null,
+            int? Size = null)
         {
             var myParams = new Dictionary<string, string>();
             myParams.Add("VolumeID", VolumeID.ToString(CultureInfo.InvariantCulture));
@@ -1893,7 +3260,7 @@ namespace Austin.Linode
                 myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
             if (Size != null)
                 myParams.Add("Size", Size.Value.ToString(CultureInfo.InvariantCulture));
-            GetResponse<object>("volume.update", myParams);
+            await GetResponseAsync<object>("volume.update", myParams);
         }
     }
 }

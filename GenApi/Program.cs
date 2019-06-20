@@ -38,6 +38,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GenApi
 {
@@ -82,13 +83,13 @@ namespace GenApi
             }
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             ApiSpec spec;
             if (args.Any(a => a == "online"))
             {
                 var li = new LinodeClient();
-                spec = li.Api_Spec();
+                spec = await li.Api_SpecAsync();
             }
             else
             {

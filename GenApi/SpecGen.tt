@@ -1,4 +1,4 @@
-﻿<#@ template language="C#" #>
+﻿<#@ template language="C#" linePragmas="false" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
@@ -50,6 +50,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Austin.Linode
 {
@@ -73,65 +74,39 @@ for (int i = 0; i < splits.Length; i++)
 		if (meth.Key == "api.spec")
 			continue; //this is created manually, otherwise there is a chicken/egg problem
 
-		Type returnType = typeof(void);
-		if (mReturnType.ContainsKey(meth.Key))
-			returnType = mReturnType[meth.Key];
-
-        int firstPeriodNdx = meth.Value.Description.IndexOf(". ");
-        string summary, remarks;
-        if (firstPeriodNdx < 0)
-        {
-            summary = meth.Value.Description.Trim();
-            remarks = null;
-        }
-        else
-        {
-            summary = meth.Value.Description.Substring(0, firstPeriodNdx + 1).Trim();
-            remarks = meth.Value.Description.Substring(firstPeriodNdx + 2).Trim();
-        }
+		Type returnType;
+		string returnTypeNameAsync = "Task";
+		if (mReturnType.TryGetValue(meth.Key, out returnType))
+		{
+			returnTypeNameAsync = "Task<" + PrettyPrintType(returnType) + ">";
+		}
+		else
+		{
+			returnType = typeof(void);
+		}
 #>
 
-        /// <summary>
-        /// <#= summary #>
-        /// </summary>
+
 <#
-                if (remarks != null)
-                {
-                
-#>
-        /// <remarks>
-        /// <#= remarks #>
-        /// </remarks>
-<#
-                }
-                if (!string.IsNullOrEmpty(meth.Value.Throws))
-                {
-#>
-        /// <exception cref="LinodeException">possible errors: <#= meth.Value.Throws #></exception>
-<#
-                }
-	        foreach (var param in SortParams(meth.Value.Parameters))
-                {
-#>
-        /// <param name="<#= param.Key #>"><#= param.Value.Description #></param>
-<#
-                }
+        OutputDocComments(meth.Value);
 #>
 	public <#= PrettyPrintType(returnType) #> <#= MethodName(meth.Key) #>(
 <#
-		int paramCount = meth.Value.Parameters.Count();
-		PushIndent(new string(' ', 12));
-		foreach (var param in SortParams(meth.Value.Parameters))
-		{
-			Write(ParamDec(param.Key, param.Value));
-			if (--paramCount != 0)
-			{
-				WriteLine(", ");
-			}
-		}
-		PopIndent();
+		OutputParamters(meth.Value);
 #>
-	)
+)
+	{
+		<#= returnType == typeof(void) ? "" : "return"#> Task.Run(() => <#= MethodName(meth.Key) #>Async( <#= string.Join(", ", SortParams(meth.Value.Parameters).Select(p => p.Key)) #> ))<#= returnType == typeof(void) ? ".Wait()" : ".Result"#>;
+	}
+
+<#
+        OutputDocComments(meth.Value);
+#>
+	public async <#= returnTypeNameAsync #> <#= MethodName(meth.Key) #>Async(
+<#
+		OutputParamters(meth.Value);
+#>
+)
 	{
 <#
 		if (meth.Value.HasParameters)
@@ -153,10 +128,72 @@ for (int i = 0; i < splits.Length; i++)
 			Write("return ");
 		}
 #>
-		GetResponse< <#= returnType == typeof(void) ? "object" : PrettyPrintType(returnType) #> >("<#= meth.Key #>", <#= meth.Value.HasParameters ? "myParams" : "null" #><#= meth.Key == "user.getapikey" ? ", needsAuth: false" : ""#>);
+		await GetResponseAsync< <#= returnType == typeof(void) ? "object" : PrettyPrintType(returnType) #> >("<#= meth.Key #>", <#= meth.Value.HasParameters ? "myParams" : "null" #><#= meth.Key == "user.getapikey" ? ", needsAuth: false" : ""#>);
 	}
 <#
     }
 #>
 }
 }
+
+<#+
+void OutputDocComments(Austin.Linode.ApiMethod meth)
+{
+    int firstPeriodNdx = meth.Description.IndexOf(". ");
+    string summary, remarks;
+    if (firstPeriodNdx < 0)
+    {
+        summary = meth.Description.Trim();
+        remarks = null;
+    }
+    else
+    {
+        summary = meth.Description.Substring(0, firstPeriodNdx + 1).Trim();
+        remarks = meth.Description.Substring(firstPeriodNdx + 2).Trim();
+    }
+#>
+        /// <summary>
+        /// <#= summary #>
+        /// </summary>
+<#+
+                if (remarks != null)
+                {
+#>
+        /// <remarks>
+        /// <#= remarks #>
+        /// </remarks>
+<#+
+                }
+                if (!string.IsNullOrEmpty(meth.Throws))
+                {
+#>
+        /// <exception cref="LinodeException">possible errors: <#= meth.Throws #></exception>
+<#+
+                }
+	        foreach (var param in SortParams(meth.Parameters))
+                {
+#>
+        /// <param name="<#= param.Key #>"><#= param.Value.Description #></param>
+<#+
+                }
+#>
+<#+
+}
+
+
+
+void OutputParamters(Austin.Linode.ApiMethod meth)
+{
+	int paramCount = meth.Parameters.Count();
+	PushIndent(new string(' ', 12));
+	foreach (var param in SortParams(meth.Parameters))
+	{
+		Write(ParamDec(param.Key, param.Value));
+		if (--paramCount != 0)
+		{
+			WriteLine(", ");
+		}
+	}
+	PopIndent();
+}
+#>
