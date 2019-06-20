@@ -42,14 +42,38 @@ namespace Austin.Linode
 {
     public partial class LinodeClient
     {
-        private readonly string mApiKey;
-        private readonly HttpClient mHttp = new HttpClient();
+        readonly HttpClient mHttp = new HttpClient();
+        string mApiKey;
 
         public LinodeClient(string apiKey)
+            : this()
         {
             if (string.IsNullOrEmpty(apiKey))
                 throw new ArgumentNullException(nameof(apiKey));
             this.mApiKey = apiKey;
+        }
+
+        public LinodeClient()
+        {
+#if NET45
+            //.NET 4.5 does not by default supprt TLS 1.2
+            //See this article for more information: https://docs.microsoft.com/en-us/dotnet/framework/network-programming/tls
+            System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
+#endif
+        }
+
+        public string ApiKey
+        {
+            get
+            {
+                return mApiKey;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentNullException();
+                mApiKey = value;
+            }
         }
 
         string GetJson(string apiAction, Dictionary<string, string> args, bool needsAuth = true)
@@ -58,7 +82,11 @@ namespace Austin.Linode
                 args = new Dictionary<string, string>();
             args.Add("api_action", apiAction);
             if (needsAuth)
+            {
+                if (mApiKey == null)
+                    throw new InvalidOperationException("The ApiKey must be set before calling a method that requires authentication.");
                 args.Add("api_key", mApiKey);
+            }
 
             var param = string.Join("&", args.Select(kvp => kvp.Key + "=" + System.Net.WebUtility.UrlEncode(kvp.Value)));
             string url = "https://api.linode.com/?" + param;

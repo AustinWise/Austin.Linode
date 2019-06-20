@@ -87,7 +87,7 @@ namespace GenApi
             ApiSpec spec;
             if (args.Any(a => a == "online"))
             {
-                var li = new LinodeClient("~~~");
+                var li = new LinodeClient();
                 spec = li.Api_Spec();
             }
             else
