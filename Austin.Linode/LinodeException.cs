@@ -1,6 +1,6 @@
 ﻿/*
  *
- * Copyright (c) 2014, Austin Wise.
+ * Copyright (c) 2019, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,9 @@ using System;
 
 namespace Austin.Linode
 {
+#if !NETSTANDARD1_1
     [Serializable]
+#endif
     public class LinodeException : Exception
     {
         public LinodeException(Error[] errors)
@@ -44,10 +46,13 @@ namespace Austin.Linode
         {
             this.Errors = errors;
         }
+
+#if !NETSTANDARD1_1
         protected LinodeException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
 
         /// <summary>
         /// The errors that caused the action to fail.

@@ -36,14 +36,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 
 namespace Austin.Linode
 {
     public partial class LinodeClient
     {
         private readonly string mApiKey;
-        private readonly WebClient mWc = new WebClient();
+        private readonly HttpClient mHttp = new HttpClient();
 
         public LinodeClient(string apiKey)
         {
@@ -63,7 +63,7 @@ namespace Austin.Linode
             //TODO: url encode
             var param = string.Join("&", args.Select(kvp => kvp.Key + "=" + kvp.Value));
             string url = "https://api.linode.com/?" + param;
-            return mWc.DownloadString(url);
+            return mHttp.GetStringAsync(url).GetAwaiter().GetResult();
         }
 
         T GetResponse<T>(string apiAction, Dictionary<string, string> args, bool needsAuth = true)

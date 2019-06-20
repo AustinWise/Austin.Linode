@@ -14,9 +14,13 @@ Available on Nuget as [Austin.Linode](https://www.nuget.org/packages/Austin.Lino
 Dependencies
 ------------
 
- - .NET Framework 4.5 or .NET Standard 2.0
+ - .NET Framework 4.6, .NET Standard 2.0, or .NET Standard 1.1
  - [Newtonsoft Json.NET](http://www.newtonsoft.com/json)
 
+Strictly speaking .NET Framework 4.5 could be supported if either your application or you operating
+system is configured to use TLS 1.2. See
+[this article](https://docs.microsoft.com/en-us/dotnet/framework/network-programming/tls)
+for more information.
 
 License
 -------
