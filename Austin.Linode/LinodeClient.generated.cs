@@ -1,6 +1,6 @@
-/*
+﻿/*
  *
- * Copyright (c) 2017, Austin Wise.
+ * Copyright (c) 2019, Austin Wise.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -288,12 +288,13 @@ namespace Austin.Linode
         /// </summary>
         /// <exception cref="LinodeException">possible errors: NOACCESS,VALIDATION</exception>
         /// <param name="DomainID"></param>
-        /// <param name="Type">One of: NS, MX, A, AAAA, CNAME, TXT, or SRV</param>
+        /// <param name="Type">One of: NS, MX, A, AAAA, CNAME, TXT, SRV or CAA</param>
         /// <param name="Name">The hostname or FQDN.  When Type=MX the subdomain to delegate to the Target MX server.</param>
         /// <param name="Port"></param>
-        /// <param name="Priority">Priority for MX and SRV records, 0-255</param>
+        /// <param name="Priority">Priority for MX and SRV records, 0-65535</param>
         /// <param name="Protocol">The protocol to append to an SRV record.  Ignored on other record types.</param>
-        /// <param name="Target">When Type=MX the hostname.  When Type=CNAME the target of the alias.  When Type=TXT the value of the record. When Type=A or AAAA the token of '[remote_addr]' will be substituted with the IP address of the request.</param>
+        /// <param name="Tag">The tag attribute for a CAA record.  One of issue, issuewild, iodef.  Ignored on other record types.</param>
+        /// <param name="Target">When Type=MX the hostname.  When Type=CNAME the target of the alias.  When Type=TXT or CAA the value of the record. When Type=A or AAAA the token of '[remote_addr]' will be substituted with the IP address of the request.</param>
         /// <param name="TTL_sec">TTL.  Leave as 0 to accept our default.</param>
         /// <param name="Weight"></param>
         public void Domain_Resource_Create(
@@ -303,6 +304,7 @@ namespace Austin.Linode
                 int? Port = null,
                 int? Priority = null,
                 string Protocol = null,
+                string Tag = null,
                 string Target = null,
                 int? TTL_sec = null,
                 int? Weight = null)
@@ -318,6 +320,8 @@ namespace Austin.Linode
                 myParams.Add("Priority", Priority.Value.ToString(CultureInfo.InvariantCulture));
             if (Protocol != null)
                 myParams.Add("Protocol", Protocol);
+            if (Tag != null)
+                myParams.Add("Tag", Tag);
             if (Target != null)
                 myParams.Add("Target", Target);
             if (TTL_sec != null)
@@ -367,9 +371,10 @@ namespace Austin.Linode
         /// <param name="DomainID"></param>
         /// <param name="Name">The hostname or FQDN.  When Type=MX the subdomain to delegate to the Target MX server.</param>
         /// <param name="Port"></param>
-        /// <param name="Priority">Priority for MX and SRV records, 0-255</param>
+        /// <param name="Priority">Priority for MX and SRV records, 0-65535</param>
         /// <param name="Protocol">The protocol to append to an SRV record.  Ignored on other record types.</param>
-        /// <param name="Target">When Type=MX the hostname.  When Type=CNAME the target of the alias.  When Type=TXT the value of the record. When Type=A or AAAA the token of '[remote_addr]' will be substituted with the IP address of the request.</param>
+        /// <param name="Tag">The tag attribute for a CAA record.  One of issue, issuewild, iodef.  Ignored on other record types.</param>
+        /// <param name="Target">When Type=MX the hostname.  When Type=CNAME the target of the alias.  When Type=TXT or CAA the value of the record. When Type=A or AAAA the token of '[remote_addr]' will be substituted with the IP address of the request.</param>
         /// <param name="TTL_sec">TTL.  Leave as 0 to accept our default.</param>
         /// <param name="Weight"></param>
         public void Domain_Resource_Update(
@@ -379,6 +384,7 @@ namespace Austin.Linode
                 int? Port = null,
                 int? Priority = null,
                 string Protocol = null,
+                string Tag = null,
                 string Target = null,
                 int? TTL_sec = null,
                 int? Weight = null)
@@ -395,6 +401,8 @@ namespace Austin.Linode
                 myParams.Add("Priority", Priority.Value.ToString(CultureInfo.InvariantCulture));
             if (Protocol != null)
                 myParams.Add("Protocol", Protocol);
+            if (Tag != null)
+                myParams.Add("Tag", Tag);
             if (Target != null)
                 myParams.Add("Target", Target);
             if (TTL_sec != null)
@@ -827,9 +835,9 @@ namespace Austin.Linode
         /// <param name="DistributionID">The DistributionID to create this disk from.  Found in avail.distributions()</param>
         /// <param name="Label">The label of this new disk image</param>
         /// <param name="LinodeID"></param>
-        /// <param name="rootPass">The root user's password</param>
+        /// <param name="rootPass">The root (or core) user's password</param>
         /// <param name="Size">Size of this disk image in MB</param>
-        /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys upon distribution configuration.</param>
+        /// <param name="rootSSHKey">Optionally sets this string into /root/.ssh/authorized_keys (or /home/core/.ssh/authorized_keys) upon distribution configuration.</param>
         public Austin.Linode.DiskIdResponse Linode_Disk_CreateFromDistribution(
                 int DistributionID,
                 string Label,
@@ -1560,7 +1568,7 @@ namespace Austin.Linode
         /// <param name="Address">The address:port combination used to communicate with this Node</param>
         /// <param name="ConfigID">The parent ConfigID to attach this Node to</param>
         /// <param name="Label">This backend Node's label</param>
-        /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', or 'drain'</param>
+        /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', 'backup', or 'drain'</param>
         /// <param name="Weight">Load balancing weight, 1-255. Higher means more connections.</param>
         public void NodeBalancer_Node_Create(
                 string Address,
@@ -1616,7 +1624,7 @@ namespace Austin.Linode
         /// <param name="NodeID"></param>
         /// <param name="Address">The address:port combination used to communicate with this Node</param>
         /// <param name="Label">This backend Node's label</param>
-        /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', or 'drain'</param>
+        /// <param name="Mode">The connections mode for this node.  One of 'accept', 'reject', 'backup', or 'drain'</param>
         /// <param name="Weight">Load balancing weight, 1-255. Higher means more connections.</param>
         public void NodeBalancer_Node_Update(
                 int NodeID,
@@ -1662,7 +1670,7 @@ namespace Austin.Linode
         /// <summary>
         /// Create a StackScript.
         /// </summary>
-        /// <exception cref="LinodeException">possible errors: NOACCESS,VALIDATION</exception>
+        /// <exception cref="LinodeException">possible errors: NOACCESS,VALIDATION,STACKSCRIPTLIMIT</exception>
         /// <param name="DistributionIDList">Comma delimited list of DistributionIDs that this script works on </param>
         /// <param name="Label">The Label for this StackScript</param>
         /// <param name="script">The actual script</param>
@@ -1706,6 +1714,7 @@ namespace Austin.Linode
         /// <summary>
         /// Lists StackScripts you have access to.
         /// </summary>
+        /// <exception cref="LinodeException">possible errors: STACKSCRIPTLIMIT</exception>
         /// <param name="StackScriptID">Limits the list to the specified StackScriptID</param>
         public void StackScript_List(
                 int? StackScriptID = null)
@@ -1768,12 +1777,12 @@ namespace Austin.Linode
         /// <remarks>
         /// The number of active keys is limited to 20.  Batch requests will be rejected if they include this API action.
         /// </remarks>
-        /// <exception cref="LinodeException">possible errors: AUTHFAIL,NEEDTOKEN,PASSWORDEXPIRED,KEYLIMIT</exception>
+        /// <exception cref="LinodeException">possible errors: AUTHFAIL,NEEDTOKEN,PASSWORDEXPIRED,KEYLIMIT,TOTPEXPIRED,NOACCESS</exception>
         /// <param name="password"></param>
         /// <param name="username"></param>
         /// <param name="expires">Number of hours the key will remain valid, between 0 and 8760. 0 means no expiration. Defaults to 168.</param>
         /// <param name="label">An optional label for this key.</param>
-        /// <param name="token">Required when two-factor authentication is enabled.</param>
+        /// <param name="token">Required when two-factor authentication is enabled. Emergency scratch codes are not permitted.</param>
         public void User_GetApiKey(
                 string password,
                 string username,
@@ -1791,6 +1800,100 @@ namespace Austin.Linode
             if (token != null)
                 myParams.Add("token", token);
             GetResponse<object>("user.getapikey", myParams);
+        }
+
+        /// <summary>
+        /// Clones an existing Block Storage Volume.
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOACCESS, VALIDATION, VOLUMEBUSY, VOLUMELIMIT</exception>
+        /// <param name="CloneFromID"></param>
+        /// <param name="Label">A unique name for the new Volume</param>
+        public void Volume_Clone(
+                int CloneFromID,
+                string Label)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("CloneFromID", CloneFromID.ToString(CultureInfo.InvariantCulture));
+            myParams.Add("Label", Label);
+            GetResponse<object>("volume.clone", myParams);
+        }
+
+        /// <summary>
+        /// Creates a new Block Storage Volume.
+        /// </summary>
+        /// <remarks>
+        /// One of DatacenterID or LinodeID is required.
+        /// </remarks>
+        /// <exception cref="LinodeException">possible errors: NOACCESS, VALIDATION, ACCOUNTLIMIT, VOLUMELIMIT</exception>
+        /// <param name="Label">A unique name for the Volume</param>
+        /// <param name="Size">Sets the size of the new Volume in GiB</param>
+        /// <param name="DatacenterID">Sets the datacenter where the Volume should be provisioned</param>
+        /// <param name="LinodeID">The Linode to attach this Volume to</param>
+        public void Volume_Create(
+                string Label,
+                int Size,
+                int? DatacenterID = null,
+                int? LinodeID = null)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("Label", Label);
+            myParams.Add("Size", Size.ToString(CultureInfo.InvariantCulture));
+            if (DatacenterID != null)
+                myParams.Add("DatacenterID", DatacenterID.Value.ToString(CultureInfo.InvariantCulture));
+            if (LinodeID != null)
+                myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("volume.create", myParams);
+        }
+
+        /// <summary>
+        /// Deletes a Block Storage Volume
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND</exception>
+        /// <param name="VolumeID">The Volume to delete</param>
+        public void Volume_Delete(
+                int VolumeID)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("VolumeID", VolumeID.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("volume.delete", myParams);
+        }
+
+        /// <summary>
+        /// Returns a list of block storage Volumes
+        /// </summary>
+        /// <param name="VolumeID">Limits the list to the specified Volume</param>
+        public void Volume_List(
+                int? VolumeID = null)
+        {
+            var myParams = new Dictionary<string, string>();
+            if (VolumeID != null)
+                myParams.Add("VolumeID", VolumeID.Value.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("volume.list", myParams);
+        }
+
+        /// <summary>
+        /// Updates a Volume's properties
+        /// </summary>
+        /// <exception cref="LinodeException">possible errors: NOTFOUND,VALIDATION,VOLUMEBUSY,VOLUMELIMIT</exception>
+        /// <param name="VolumeID">The Volume to modify</param>
+        /// <param name="Label">A unique name for the Volume</param>
+        /// <param name="LinodeID">The Linode to attach this Volume to</param>
+        /// <param name="Size">Sets the new size of the new Volume in GiB; Volumes can only be made larger</param>
+        public void Volume_Update(
+                int VolumeID,
+                string Label = null,
+                int? LinodeID = null,
+                int? Size = null)
+        {
+            var myParams = new Dictionary<string, string>();
+            myParams.Add("VolumeID", VolumeID.ToString(CultureInfo.InvariantCulture));
+            if (Label != null)
+                myParams.Add("Label", Label);
+            if (LinodeID != null)
+                myParams.Add("LinodeID", LinodeID.Value.ToString(CultureInfo.InvariantCulture));
+            if (Size != null)
+                myParams.Add("Size", Size.Value.ToString(CultureInfo.InvariantCulture));
+            GetResponse<object>("volume.update", myParams);
         }
     }
 }
