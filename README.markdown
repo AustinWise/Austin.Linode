@@ -14,7 +14,7 @@ Available on Nuget as [Austin.Linode](https://www.nuget.org/packages/Austin.Lino
 Dependencies
 ------------
 
- - .NET Framework 4.5 or .NET Standard 1.1
+ - .NET Framework 4.6.2 or .NET Standard 1.1
  - [Newtonsoft Json.NET](http://www.newtonsoft.com/json)
 
 License

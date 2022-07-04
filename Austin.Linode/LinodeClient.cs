@@ -56,11 +56,6 @@ namespace Austin.Linode
 
         public LinodeClient()
         {
-#if NET45
-            //.NET 4.5 does not by default supprt TLS 1.2
-            //See this article for more information: https://docs.microsoft.com/en-us/dotnet/framework/network-programming/tls
-            System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
-#endif
         }
 
         public string ApiKey
